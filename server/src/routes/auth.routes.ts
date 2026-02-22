@@ -1,0 +1,14 @@
+import { Router } from 'express';
+import * as authController from '../controllers/auth.controller';
+import { requireAuth } from '../middleware/auth';
+import { authRateLimiter } from '../middleware/rateLimiter';
+
+const router = Router();
+
+router.post('/login', authRateLimiter, authController.login);
+router.post('/refresh', authController.refresh);
+router.post('/logout', authController.logout);
+router.get('/me', requireAuth, authController.me);
+router.put('/password', requireAuth, authController.changePassword);
+
+export default router;
