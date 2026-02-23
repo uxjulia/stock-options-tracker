@@ -2,8 +2,23 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
+const buildTime = new Date().toLocaleString();
+
 export default defineConfig({
+  define: {
+    buildTime: JSON.stringify(buildTime),
+  },
   plugins: [
+    {
+      name: "build-time-meta",
+      transformIndexHtml: () => [
+        {
+          tag: "meta",
+          attrs: { name: "build-time", content: buildTime },
+          injectTo: "head",
+        },
+      ],
+    },
     react(),
     VitePWA({
       registerType: "autoUpdate",
