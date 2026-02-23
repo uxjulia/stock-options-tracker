@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import axios from 'axios';
 import { AppShell } from './components/layout/AppShell';
@@ -25,6 +25,7 @@ const queryClient = new QueryClient({
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { setAuth, logout } = useAuthStore();
   const [initializing, setInitializing] = useState(true);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     // Attempt silent token refresh using the httpOnly refresh cookie
@@ -39,6 +40,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
       })
       .catch(() => {
         logout();
+        queryClient.clear();
       })
       .finally(() => {
         setInitializing(false);
