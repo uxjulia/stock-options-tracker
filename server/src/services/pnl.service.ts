@@ -1,4 +1,4 @@
-import db from '../config/database';
+import db from "../config/database";
 
 export interface PnLByAccount {
   account_id: number;
@@ -27,20 +27,30 @@ export interface PnLSummary {
   by_month: MonthlyPnL[];
 }
 
-function proceeds(direction: string, premium: number, qty: number, closeReason: string | null, costToClose: number | null): number {
-  if (direction === 'sold') {
+function proceeds(
+  direction: string,
+  premium: number,
+  qty: number,
+  closeReason: string | null,
+  costToClose: number | null
+): number {
+  if (direction === "sold") {
     const credit = premium * 100 * qty;
-    const closeCost = closeReason === 'closed_early' ? (costToClose ?? 0) * 100 * qty : 0;
+    const closeCost =
+      closeReason === "closed_early" ? (costToClose ?? 0) * 100 * qty : 0;
     return credit - closeCost;
   } else {
     const debit = premium * 100 * qty;
-    const sellBack = closeReason === 'closed_early' ? (costToClose ?? 0) * 100 * qty : 0;
+    const sellBack =
+      closeReason === "closed_early" ? (costToClose ?? 0) * 100 * qty : 0;
     return sellBack - debit;
   }
 }
 
 export function getPnLByAccount(userId: number, year?: number): PnLByAccount[] {
-  const yearFilter = year ? `AND strftime('%Y', o.date_closed) = '${year}'` : '';
+  const yearFilter = year
+    ? `AND strftime('%Y', o.date_closed) = '${year}'`
+    : "";
 
   return db
     .prepare(
@@ -74,7 +84,11 @@ export function getPnLByAccount(userId: number, year?: number): PnLByAccount[] {
     .all(userId) as PnLByAccount[];
 }
 
-export function getPnLByTicker(userId: number, accountId?: number, year?: number): PnLByTicker[] {
+export function getPnLByTicker(
+  userId: number,
+  accountId?: number,
+  year?: number
+): PnLByTicker[] {
   const conditions = [`o.user_id = ? AND o.date_closed IS NOT NULL`];
   const params: unknown[] = [userId];
 
@@ -107,7 +121,7 @@ export function getPnLByTicker(userId: number, accountId?: number, year?: number
           END
         ), 0) AS realized_pnl
       FROM options o
-      WHERE ${conditions.join(' AND ')}
+      WHERE ${conditions.join(" AND ")}
       GROUP BY o.ticker
       ORDER BY realized_pnl DESC`
     )
@@ -136,7 +150,11 @@ export function getPnLSummary(userId: number): PnLSummary {
       FROM options
       WHERE user_id = ? AND date_closed IS NOT NULL`
     )
-    .get(userId) as { total_trades: number; total_realized: number; win_count: number };
+    .get(userId) as {
+    total_trades: number;
+    total_realized: number;
+    win_count: number;
+  };
 
   const byMonth = db
     .prepare(

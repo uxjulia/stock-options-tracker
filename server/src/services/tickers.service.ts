@@ -1,10 +1,10 @@
-import db from '../config/database';
-import { fetchPrices } from '../utils/yahooFinance';
-import { PRICE_CACHE_TTL_MS } from '../config/constants';
-import type { TickerPriceCache, PriceData } from '../models/tickerCache.model';
+import db from "../config/database";
+import { fetchPrices } from "../utils/yahooFinance";
+import { PRICE_CACHE_TTL_MS } from "../config/constants";
+import type { TickerPriceCache, PriceData } from "../models/tickerCache.model";
 
 function isCacheFresh(fetchedAt: string): boolean {
-  const fetchedTime = new Date(fetchedAt + 'Z').getTime();
+  const fetchedTime = new Date(fetchedAt + "Z").getTime();
   return Date.now() - fetchedTime < PRICE_CACHE_TTL_MS;
 }
 
@@ -18,13 +18,15 @@ function rowToPriceData(row: TickerPriceCache, stale = false): PriceData {
   };
 }
 
-export async function getPrices(symbols: string[]): Promise<Record<string, PriceData | null>> {
+export async function getPrices(
+  symbols: string[]
+): Promise<Record<string, PriceData | null>> {
   const result: Record<string, PriceData | null> = {};
   const staleSymbols: string[] = [];
 
   for (const symbol of symbols) {
     const cached = db
-      .prepare('SELECT * FROM ticker_price_cache WHERE symbol = ?')
+      .prepare("SELECT * FROM ticker_price_cache WHERE symbol = ?")
       .get(symbol) as TickerPriceCache | undefined;
 
     if (cached) {
@@ -97,7 +99,7 @@ export function setManualOverride(symbol: string, price: number): PriceData {
 
 export function clearManualOverride(symbol: string): PriceData | null {
   const existing = db
-    .prepare('SELECT * FROM ticker_price_cache WHERE symbol = ?')
+    .prepare("SELECT * FROM ticker_price_cache WHERE symbol = ?")
     .get(symbol) as TickerPriceCache | undefined;
 
   if (!existing) return null;

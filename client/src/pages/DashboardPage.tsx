@@ -1,17 +1,21 @@
-import { useState } from 'react';
-import { SummaryCards } from '../components/dashboard/SummaryCards';
-import { ExpirationAlerts } from '../components/dashboard/ExpirationAlerts';
-import { OptionsTable } from '../components/options/OptionsTable';
-import { OptionForm } from '../components/options/OptionForm';
-import { Button } from '../components/ui/Button';
-import { Spinner } from '../components/ui/Spinner';
-import { useOptions } from '../hooks/useOptions';
-import { useUIStore } from '../store/uiStore';
+import { useState } from "react";
+import { SummaryCards } from "../components/dashboard/SummaryCards";
+import { ExpirationAlerts } from "../components/dashboard/ExpirationAlerts";
+import { OptionsTable } from "../components/options/OptionsTable";
+import { OptionForm } from "../components/options/OptionForm";
+import { Button } from "../components/ui/Button";
+import { Spinner } from "../components/ui/Spinner";
+import { useOptions } from "../hooks/useOptions";
+import { useUIStore } from "../store/uiStore";
 
 export function DashboardPage() {
   const [addOpen, setAddOpen] = useState(false);
   const { showOldOptions, setShowOldOptions } = useUIStore();
-  const { data, isLoading } = useOptions({ status: 'open', show_old: showOldOptions, limit: 100 });
+  const { data, isLoading } = useOptions({
+    status: "open",
+    show_old: showOldOptions,
+    limit: 100,
+  });
 
   return (
     <div className="space-y-6 max-w-7xl">

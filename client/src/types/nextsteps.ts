@@ -1,4 +1,4 @@
-export type Recommendation = 'sell_covered_call' | 'sell_csp' | 'neutral';
+export type Recommendation = "sell_covered_call" | "sell_csp" | "neutral";
 
 export interface NextStepRecommendation {
   ticker: string;

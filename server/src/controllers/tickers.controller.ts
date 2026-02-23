@@ -1,16 +1,19 @@
-import { Response } from 'express';
-import { z } from 'zod';
-import type { AuthRequest } from '../middleware/auth';
-import * as tickersService from '../services/tickers.service';
+import { Response } from "express";
+import { z } from "zod";
+import type { AuthRequest } from "../middleware/auth";
+import * as tickersService from "../services/tickers.service";
 
-export async function getPrices(req: AuthRequest, res: Response): Promise<void> {
-  const symbols = String(req.query.symbols ?? '')
-    .split(',')
+export async function getPrices(
+  req: AuthRequest,
+  res: Response
+): Promise<void> {
+  const symbols = String(req.query.symbols ?? "")
+    .split(",")
     .map((s) => s.trim().toUpperCase())
     .filter(Boolean);
 
   if (symbols.length === 0) {
-    res.status(400).json({ error: 'At least one symbol is required' });
+    res.status(400).json({ error: "At least one symbol is required" });
     return;
   }
 
@@ -18,7 +21,10 @@ export async function getPrices(req: AuthRequest, res: Response): Promise<void> 
   res.json(prices);
 }
 
-export async function getActiveTickerPrices(req: AuthRequest, res: Response): Promise<void> {
+export async function getActiveTickerPrices(
+  req: AuthRequest,
+  res: Response
+): Promise<void> {
   const tickers = tickersService.getActiveTickersForUser(req.userId!);
   if (tickers.length === 0) {
     res.json({});
@@ -45,7 +51,7 @@ export function clearOverride(req: AuthRequest, res: Response): void {
   const symbol = req.params.symbol.toUpperCase();
   const data = tickersService.clearManualOverride(symbol);
   if (!data) {
-    res.status(404).json({ error: 'No cached price found for symbol' });
+    res.status(404).json({ error: "No cached price found for symbol" });
     return;
   }
   res.json(data);

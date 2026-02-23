@@ -1,17 +1,21 @@
-import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import axios from 'axios';
-import { AppShell } from './components/layout/AppShell';
-import { LoginPage } from './pages/LoginPage';
-import { DashboardPage } from './pages/DashboardPage';
-import { OptionsPage } from './pages/OptionsPage';
-import { AccountsPage } from './pages/AccountsPage';
-import { PnLPage } from './pages/PnLPage';
-import { NextStepsPage } from './pages/NextStepsPage';
-import { LoadingScreen } from './components/ui/Spinner';
-import { useAuthStore } from './store/authStore';
+import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import axios from "axios";
+import { AppShell } from "./components/layout/AppShell";
+import { LoginPage } from "./pages/LoginPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { OptionsPage } from "./pages/OptionsPage";
+import { AccountsPage } from "./pages/AccountsPage";
+import { PnLPage } from "./pages/PnLPage";
+import { NextStepsPage } from "./pages/NextStepsPage";
+import { LoadingScreen } from "./components/ui/Spinner";
+import { useAuthStore } from "./store/authStore";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,7 +34,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Attempt silent token refresh using the httpOnly refresh cookie
     axios
-      .post('/api/auth/refresh', {}, { withCredentials: true })
+      .post("/api/auth/refresh", {}, { withCredentials: true })
       .then((res) => {
         const { token, user } = res.data as {
           token: string;
@@ -45,7 +49,7 @@ function AuthGate({ children }: { children: React.ReactNode }) {
       .finally(() => {
         setInitializing(false);
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (initializing) return <LoadingScreen />;

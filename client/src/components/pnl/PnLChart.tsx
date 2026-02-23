@@ -7,8 +7,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-} from 'recharts';
-import { formatCurrency } from '../../utils/formatters';
+} from "recharts";
+import { formatCurrency } from "../../utils/formatters";
 
 interface ChartDataPoint {
   name: string;
@@ -23,7 +23,10 @@ interface PnLChartProps {
 export function PnLChart({ data, height = 240 }: PnLChartProps) {
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center text-slate-500" style={{ height }}>
+      <div
+        className="flex items-center justify-center text-slate-500"
+        style={{ height }}
+      >
         No data to display
       </div>
     );
@@ -32,34 +35,38 @@ export function PnLChart({ data, height = 240 }: PnLChartProps) {
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} margin={{ top: 4, right: 8, left: 8, bottom: 4 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
+        <CartesianGrid
+          strokeDasharray="3 3"
+          stroke="#334155"
+          vertical={false}
+        />
         <XAxis
           dataKey="name"
-          tick={{ fill: '#64748b', fontSize: 11 }}
+          tick={{ fill: "#64748b", fontSize: 11 }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fill: '#64748b', fontSize: 11 }}
+          tick={{ fill: "#64748b", fontSize: 11 }}
           axisLine={false}
           tickLine={false}
           tickFormatter={(v) => `$${(v / 1000).toFixed(1)}k`}
         />
         <Tooltip
           contentStyle={{
-            backgroundColor: '#1e293b',
-            border: '1px solid #334155',
-            borderRadius: '8px',
-            color: '#e2e8f0',
+            backgroundColor: "#1e293b",
+            border: "1px solid #334155",
+            borderRadius: "8px",
+            color: "#e2e8f0",
           }}
-          formatter={(value: number) => [formatCurrency(value), 'P&L']}
-          cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+          formatter={(value: number) => [formatCurrency(value), "P&L"]}
+          cursor={{ fill: "rgba(255,255,255,0.05)" }}
         />
         <Bar dataKey="value" radius={[4, 4, 0, 0]}>
           {data.map((entry, index) => (
             <Cell
               key={`cell-${index}`}
-              fill={entry.value >= 0 ? '#22c55e' : '#ef4444'}
+              fill={entry.value >= 0 ? "#22c55e" : "#ef4444"}
               fillOpacity={entry.value === 0 ? 0.3 : 0.85}
             />
           ))}

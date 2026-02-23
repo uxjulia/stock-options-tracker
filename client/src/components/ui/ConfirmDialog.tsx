@@ -1,5 +1,5 @@
-import { Modal } from './Modal';
-import { Button } from './Button';
+import { Modal } from "./Modal";
+import { Button } from "./Button";
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -17,7 +17,7 @@ export function ConfirmDialog({
   onConfirm,
   title,
   message,
-  confirmLabel = 'Confirm',
+  confirmLabel = "Confirm",
   loading = false,
 }: ConfirmDialogProps) {
   return (

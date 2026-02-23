@@ -1,15 +1,24 @@
-import db from '../config/database';
-import { calcBreakeven, calcProceeds, calcStockDelta, calcDaysOpen } from '../utils/calculations';
-import { getPrices } from './tickers.service';
-import type { OptionRow, OptionWithCalculations, CloseReason } from '../models/option.model';
-import { HIDE_OLDER_THAN_DAYS } from '../config/constants';
+import db from "../config/database";
+import {
+  calcBreakeven,
+  calcProceeds,
+  calcStockDelta,
+  calcDaysOpen,
+} from "../utils/calculations";
+import { getPrices } from "./tickers.service";
+import type {
+  OptionRow,
+  OptionWithCalculations,
+  CloseReason,
+} from "../models/option.model";
+import { HIDE_OLDER_THAN_DAYS } from "../config/constants";
 
 export interface OptionFilters {
   account_id?: number;
   ticker?: string;
-  option_type?: 'call' | 'put';
-  direction?: 'bought' | 'sold';
-  status?: 'open' | 'closed' | 'all';
+  option_type?: "call" | "put";
+  direction?: "bought" | "sold";
+  status?: "open" | "closed" | "all";
   show_old?: boolean;
   page?: number;
   limit?: number;
@@ -17,9 +26,16 @@ export interface OptionFilters {
 
 function attachCalculations(
   row: OptionRow & { account_name: string },
-  priceData: Record<string, { price: number; isManualOverride: boolean; isStale: boolean } | null>
+  priceData: Record<
+    string,
+    { price: number; isManualOverride: boolean; isStale: boolean } | null
+  >
 ): OptionWithCalculations {
-  const breakeven = calcBreakeven(row.option_type, row.strike_price, row.premium);
+  const breakeven = calcBreakeven(
+    row.option_type,
+    row.strike_price,
+    row.premium
+  );
   const proceeds = calcProceeds(
     row.direction,
     row.premium,
@@ -50,39 +66,39 @@ export async function listOptions(
     ticker,
     option_type,
     direction,
-    status = 'open',
+    status = "open",
     show_old = false,
     page = 1,
     limit = 50,
   } = filters;
 
-  const conditions: string[] = ['o.user_id = @userId'];
+  const conditions: string[] = ["o.user_id = @userId"];
   const params: Record<string, unknown> = { userId };
 
   if (account_id) {
-    conditions.push('o.account_id = @account_id');
+    conditions.push("o.account_id = @account_id");
     params.account_id = account_id;
   }
   if (ticker) {
-    conditions.push('o.ticker LIKE @ticker');
+    conditions.push("o.ticker LIKE @ticker");
     params.ticker = `%${ticker.toUpperCase()}%`;
   }
   if (option_type) {
-    conditions.push('o.option_type = @option_type');
+    conditions.push("o.option_type = @option_type");
     params.option_type = option_type;
   }
   if (direction) {
-    conditions.push('o.direction = @direction');
+    conditions.push("o.direction = @direction");
     params.direction = direction;
   }
 
-  if (status === 'open') {
-    conditions.push('o.date_closed IS NULL');
-  } else if (status === 'closed') {
-    conditions.push('o.date_closed IS NOT NULL');
+  if (status === "open") {
+    conditions.push("o.date_closed IS NULL");
+  } else if (status === "closed") {
+    conditions.push("o.date_closed IS NOT NULL");
   }
 
-  if (!show_old && status !== 'open') {
+  if (!show_old && status !== "open") {
     // Hide closed options closed more than 30 days ago
     conditions.push(
       `(o.date_closed IS NULL OR
@@ -91,12 +107,11 @@ export async function listOptions(
     params.hide_days = HIDE_OLDER_THAN_DAYS;
   }
 
-  const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
   const countRow = db
-    .prepare(
-      `SELECT COUNT(*) as total FROM options o ${whereClause}`
-    )
+    .prepare(`SELECT COUNT(*) as total FROM options o ${whereClause}`)
     .get(params) as { total: number };
 
   const offset = (page - 1) * limit;
@@ -111,7 +126,9 @@ export async function listOptions(
          o.expiration_date ASC
        LIMIT @limit OFFSET @offset`
     )
-    .all({ ...params, limit, offset }) as (OptionRow & { account_name: string })[];
+    .all({ ...params, limit, offset }) as (OptionRow & {
+    account_name: string;
+  })[];
 
   // Batch fetch prices for unique tickers
   const tickers = [...new Set(rows.map((r) => r.ticker.toUpperCase()))];
@@ -133,7 +150,9 @@ export async function getOption(
        JOIN accounts a ON a.id = o.account_id
        WHERE o.id = ? AND o.user_id = ?`
     )
-    .get(optionId, userId) as (OptionRow & { account_name: string }) | undefined;
+    .get(optionId, userId) as
+    | (OptionRow & { account_name: string })
+    | undefined;
 
   if (!row) return undefined;
 
@@ -144,8 +163,8 @@ export async function getOption(
 export interface CreateOptionData {
   account_id: number;
   ticker: string;
-  direction: 'bought' | 'sold';
-  option_type: 'call' | 'put';
+  direction: "bought" | "sold";
+  option_type: "call" | "put";
   strike_price: number;
   expiration_date: string;
   quantity: number;
@@ -183,7 +202,7 @@ export async function createOption(
     }) as OptionRow;
 
   const account = db
-    .prepare('SELECT name FROM accounts WHERE id = ?')
+    .prepare("SELECT name FROM accounts WHERE id = ?")
     .get(data.account_id) as { name: string };
 
   const priceData = await getPrices([data.ticker.toUpperCase()]);
@@ -193,8 +212,8 @@ export async function createOption(
 export interface UpdateOptionData {
   account_id?: number;
   ticker?: string;
-  direction?: 'bought' | 'sold';
-  option_type?: 'call' | 'put';
+  direction?: "bought" | "sold";
+  option_type?: "call" | "put";
   strike_price?: number;
   expiration_date?: string;
   quantity?: number;
@@ -210,7 +229,7 @@ export async function updateOption(
   data: UpdateOptionData
 ): Promise<OptionWithCalculations | undefined> {
   const existing = db
-    .prepare('SELECT * FROM options WHERE id = ? AND user_id = ?')
+    .prepare("SELECT * FROM options WHERE id = ? AND user_id = ?")
     .get(optionId, userId) as OptionRow | undefined;
 
   if (!existing) return undefined;
@@ -246,7 +265,9 @@ export async function updateOption(
       notes: data.notes !== undefined ? data.notes : existing.notes,
       ignore_next_steps:
         data.ignore_next_steps !== undefined
-          ? data.ignore_next_steps ? 1 : 0
+          ? data.ignore_next_steps
+            ? 1
+            : 0
           : existing.ignore_next_steps,
       id: optionId,
       userId,
@@ -254,11 +275,14 @@ export async function updateOption(
 
   const accountId = updated.account_id;
   const account = db
-    .prepare('SELECT name FROM accounts WHERE id = ?')
+    .prepare("SELECT name FROM accounts WHERE id = ?")
     .get(accountId) as { name: string };
 
   const priceData = await getPrices([updated.ticker.toUpperCase()]);
-  return attachCalculations({ ...updated, account_name: account.name }, priceData);
+  return attachCalculations(
+    { ...updated, account_name: account.name },
+    priceData
+  );
 }
 
 export interface CloseOptionData {
@@ -273,7 +297,7 @@ export async function closeOption(
   data: CloseOptionData
 ): Promise<OptionWithCalculations | undefined> {
   const existing = db
-    .prepare('SELECT * FROM options WHERE id = ? AND user_id = ?')
+    .prepare("SELECT * FROM options WHERE id = ? AND user_id = ?")
     .get(optionId, userId) as OptionRow | undefined;
 
   if (!existing) return undefined;
@@ -281,8 +305,12 @@ export async function closeOption(
 
   // Calculate stock delta for assigned options
   const stockDelta =
-    data.close_reason === 'assigned'
-      ? calcStockDelta(existing.direction, existing.option_type, existing.quantity)
+    data.close_reason === "assigned"
+      ? calcStockDelta(
+          existing.direction,
+          existing.option_type,
+          existing.quantity
+        )
       : null;
 
   const updated = db
@@ -299,23 +327,29 @@ export async function closeOption(
     .get({
       date_closed: data.date_closed,
       close_reason: data.close_reason,
-      cost_to_close: data.close_reason === 'closed_early' ? (data.cost_to_close ?? null) : null,
+      cost_to_close:
+        data.close_reason === "closed_early"
+          ? (data.cost_to_close ?? null)
+          : null,
       stock_delta_applied: stockDelta,
       id: optionId,
       userId,
     }) as OptionRow;
 
   const account = db
-    .prepare('SELECT name FROM accounts WHERE id = ?')
+    .prepare("SELECT name FROM accounts WHERE id = ?")
     .get(updated.account_id) as { name: string };
 
   const priceData = await getPrices([updated.ticker.toUpperCase()]);
-  return attachCalculations({ ...updated, account_name: account.name }, priceData);
+  return attachCalculations(
+    { ...updated, account_name: account.name },
+    priceData
+  );
 }
 
 export function deleteOption(userId: number, optionId: number): boolean {
   const result = db
-    .prepare('DELETE FROM options WHERE id = ? AND user_id = ?')
+    .prepare("DELETE FROM options WHERE id = ? AND user_id = ?")
     .run(optionId, userId);
   return result.changes > 0;
 }

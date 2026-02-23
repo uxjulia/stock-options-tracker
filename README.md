@@ -20,13 +20,13 @@ A self-hosted personal options trading tracker with a React frontend and Express
 
 ## Tech Stack
 
-| Layer | Tech |
-|---|---|
+| Layer    | Tech                                     |
+| -------- | ---------------------------------------- |
 | Frontend | React 18, Vite, TypeScript, Tailwind CSS |
-| Backend | Node.js, Express, TypeScript, `tsx` |
-| Database | SQLite via `better-sqlite3` |
-| Auth | JWT (access + refresh tokens) + bcrypt |
-| Monorepo | npm workspaces |
+| Backend  | Node.js, Express, TypeScript, `tsx`      |
+| Database | SQLite via `better-sqlite3`              |
+| Auth     | JWT (access + refresh tokens) + bcrypt   |
+| Monorepo | npm workspaces                           |
 
 ---
 
@@ -131,20 +131,20 @@ In production, the server serves the built React client at `/` and the API at `/
 
 ## API Overview
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/auth/login` | Login |
-| `POST` | `/api/auth/logout` | Logout |
-| `GET` | `/api/auth/me` | Current user |
-| `PUT` | `/api/auth/password` | Change password |
-| `GET` | `/api/options` | List options |
-| `POST` | `/api/options` | Create option |
-| `PUT` | `/api/options/:id` | Update option |
-| `DELETE` | `/api/options/:id` | Delete option |
-| `GET` | `/api/accounts` | List accounts |
-| `POST` | `/api/accounts` | Create account |
-| `GET` | `/api/pnl` | P&L summary |
-| `GET` | `/api/tickers/prices` | Fetch live prices |
-| `GET` | `/api/next-steps` | List next steps |
+| Method   | Endpoint              | Description       |
+| -------- | --------------------- | ----------------- |
+| `POST`   | `/api/auth/login`     | Login             |
+| `POST`   | `/api/auth/logout`    | Logout            |
+| `GET`    | `/api/auth/me`        | Current user      |
+| `PUT`    | `/api/auth/password`  | Change password   |
+| `GET`    | `/api/options`        | List options      |
+| `POST`   | `/api/options`        | Create option     |
+| `PUT`    | `/api/options/:id`    | Update option     |
+| `DELETE` | `/api/options/:id`    | Delete option     |
+| `GET`    | `/api/accounts`       | List accounts     |
+| `POST`   | `/api/accounts`       | Create account    |
+| `GET`    | `/api/pnl`            | P&L summary       |
+| `GET`    | `/api/tickers/prices` | Fetch live prices |
+| `GET`    | `/api/next-steps`     | List next steps   |
 
 All endpoints except login require a valid JWT (`Authorization: Bearer <token>` or session cookie).

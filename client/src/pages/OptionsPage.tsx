@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { OptionsTable } from '../components/options/OptionsTable';
-import { OptionsFilters } from '../components/options/OptionsFilters';
-import { OptionForm } from '../components/options/OptionForm';
-import { Button } from '../components/ui/Button';
-import { Spinner } from '../components/ui/Spinner';
-import { useOptions } from '../hooks/useOptions';
-import { useOptionStore } from '../store/optionStore';
-import { useUIStore } from '../store/uiStore';
+import { useState } from "react";
+import { OptionsTable } from "../components/options/OptionsTable";
+import { OptionsFilters } from "../components/options/OptionsFilters";
+import { OptionForm } from "../components/options/OptionForm";
+import { Button } from "../components/ui/Button";
+import { Spinner } from "../components/ui/Spinner";
+import { useOptions } from "../hooks/useOptions";
+import { useOptionStore } from "../store/optionStore";
+import { useUIStore } from "../store/uiStore";
 
 export function OptionsPage() {
   const [addOpen, setAddOpen] = useState(false);
@@ -44,7 +44,7 @@ export function OptionsPage() {
           <>
             <div className="px-3 py-2 border-b border-slate-700/50 flex items-center justify-between">
               <span className="text-xs text-slate-500">
-                {total} result{total !== 1 ? 's' : ''}
+                {total} result{total !== 1 ? "s" : ""}
                 {isFetching && !isLoading && (
                   <Spinner size="sm" className="inline ml-2" />
                 )}

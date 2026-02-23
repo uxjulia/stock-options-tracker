@@ -1,13 +1,16 @@
-import apiClient from './client';
-import type { Account } from '../types/account';
+import apiClient from "./client";
+import type { Account } from "../types/account";
 
 export async function listAccounts(): Promise<Account[]> {
-  const res = await apiClient.get('/accounts');
+  const res = await apiClient.get("/accounts");
   return res.data;
 }
 
-export async function createAccount(data: { name: string; description?: string }): Promise<Account> {
-  const res = await apiClient.post('/accounts', data);
+export async function createAccount(data: {
+  name: string;
+  description?: string;
+}): Promise<Account> {
+  const res = await apiClient.post("/accounts", data);
   return res.data;
 }
 

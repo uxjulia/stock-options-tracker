@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface UIStore {
   sidebarOpen: boolean;
@@ -14,12 +14,13 @@ export const useUIStore = create<UIStore>()(
     (set) => ({
       sidebarOpen: true,
       showOldOptions: false,
-      toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+      toggleSidebar: () =>
+        set((state) => ({ sidebarOpen: !state.sidebarOpen })),
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
       setShowOldOptions: (show) => set({ showOldOptions: show }),
     }),
     {
-      name: 'ui-store',
+      name: "ui-store",
       partialize: (state) => ({ showOldOptions: state.showOldOptions }),
     }
   )

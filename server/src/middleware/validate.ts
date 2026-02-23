@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
-import { ZodSchema } from 'zod';
+import { Request, Response, NextFunction } from "express";
+import { ZodSchema } from "zod";
 
 export function validate(schema: ZodSchema) {
   return (req: Request, res: Response, next: NextFunction): void => {
     const result = schema.safeParse(req.body);
     if (!result.success) {
       res.status(400).json({
-        error: 'Validation failed',
+        error: "Validation failed",
         details: result.error.flatten().fieldErrors,
       });
       return;
@@ -21,7 +21,7 @@ export function validateQuery(schema: ZodSchema) {
     const result = schema.safeParse(req.query);
     if (!result.success) {
       res.status(400).json({
-        error: 'Invalid query parameters',
+        error: "Invalid query parameters",
         details: result.error.flatten().fieldErrors,
       });
       return;

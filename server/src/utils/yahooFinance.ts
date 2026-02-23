@@ -14,15 +14,18 @@
 // ---------------------------------------------------------------------------
 
 interface FinnhubQuoteResponse {
-  c?: number;  // current price
+  c?: number; // current price
   pc?: number; // previous close
 }
 
-async function fetchFinnhub(symbol: string, apiKey: string): Promise<number | null> {
+async function fetchFinnhub(
+  symbol: string,
+  apiKey: string
+): Promise<number | null> {
   const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(symbol)}&token=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Finnhub HTTP ${res.status}`);
-  const data = await res.json() as FinnhubQuoteResponse;
+  const data = (await res.json()) as FinnhubQuoteResponse;
   // c === 0 means the symbol wasn't found / market closed with no data
   return data.c && data.c !== 0 ? data.c : null;
 }
@@ -35,11 +38,14 @@ interface PolygonPrevCloseResponse {
   results?: Array<{ c?: number }>;
 }
 
-async function fetchPolygon(symbol: string, apiKey: string): Promise<number | null> {
+async function fetchPolygon(
+  symbol: string,
+  apiKey: string
+): Promise<number | null> {
   const url = `https://api.polygon.io/v2/aggs/ticker/${encodeURIComponent(symbol)}/prev?adjusted=true&apiKey=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Polygon HTTP ${res.status}`);
-  const data = await res.json() as PolygonPrevCloseResponse;
+  const data = (await res.json()) as PolygonPrevCloseResponse;
   return data.results?.[0]?.c ?? null;
 }
 
@@ -59,7 +65,7 @@ type YFClass = new () => YFInstance;
 let _yf: YFInstance | null = null;
 async function getYF(): Promise<YFInstance> {
   if (_yf) return _yf;
-  const mod = await eval("import('yahoo-finance2')") as { default: YFClass };
+  const mod = (await eval("import('yahoo-finance2')")) as { default: YFClass };
   _yf = new mod.default();
   return _yf;
 }
@@ -79,7 +85,9 @@ async function fetchYahoo(symbol: string): Promise<number | null> {
  * Tries Finnhub → Polygon → Yahoo Finance in order, per symbol.
  * Returns null for any symbol where all providers fail.
  */
-export async function fetchPrices(symbols: string[]): Promise<Record<string, number | null>> {
+export async function fetchPrices(
+  symbols: string[]
+): Promise<Record<string, number | null>> {
   const result: Record<string, number | null> = {};
   if (symbols.length === 0) return result;
 
@@ -94,7 +102,10 @@ export async function fetchPrices(symbols: string[]): Promise<Record<string, num
       try {
         price = await fetchFinnhub(symbol, finnhubKey);
       } catch (err) {
-        console.warn(`[Finnhub] Failed for ${symbol}:`, err instanceof Error ? err.message : err);
+        console.warn(
+          `[Finnhub] Failed for ${symbol}:`,
+          err instanceof Error ? err.message : err
+        );
       }
     }
 
@@ -103,7 +114,10 @@ export async function fetchPrices(symbols: string[]): Promise<Record<string, num
       try {
         price = await fetchYahoo(symbol);
       } catch (err) {
-        console.warn(`[Yahoo] Failed for ${symbol}:`, err instanceof Error ? err.message : err);
+        console.warn(
+          `[Yahoo] Failed for ${symbol}:`,
+          err instanceof Error ? err.message : err
+        );
       }
     }
 
@@ -112,7 +126,10 @@ export async function fetchPrices(symbols: string[]): Promise<Record<string, num
       try {
         price = await fetchPolygon(symbol, polygonKey);
       } catch (err) {
-        console.warn(`[Polygon] Failed for ${symbol}:`, err instanceof Error ? err.message : err);
+        console.warn(
+          `[Polygon] Failed for ${symbol}:`,
+          err instanceof Error ? err.message : err
+        );
       }
     }
 

@@ -1,29 +1,29 @@
-import { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { format } from 'date-fns';
-import { Modal } from '../ui/Modal';
-import { Input } from '../ui/Input';
-import { Select } from '../ui/Select';
-import { Button } from '../ui/Button';
-import { Textarea } from '../ui/Textarea';
-import { useCreateOption, useUpdateOption } from '../../hooks/useOptions';
-import { useAccounts } from '../../hooks/useAccounts';
-import { calcBreakeven, calcProceeds } from '../../utils/calculations';
-import { formatCurrency, formatPrice } from '../../utils/formatters';
-import type { Option, OptionFormData } from '../../types/option';
+import { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { format } from "date-fns";
+import { Modal } from "../ui/Modal";
+import { Input } from "../ui/Input";
+import { Select } from "../ui/Select";
+import { Button } from "../ui/Button";
+import { Textarea } from "../ui/Textarea";
+import { useCreateOption, useUpdateOption } from "../../hooks/useOptions";
+import { useAccounts } from "../../hooks/useAccounts";
+import { calcBreakeven, calcProceeds } from "../../utils/calculations";
+import { formatCurrency, formatPrice } from "../../utils/formatters";
+import type { Option, OptionFormData } from "../../types/option";
 
 const schema = z.object({
-  account_id: z.coerce.number().int().positive('Select an account'),
-  ticker: z.string().min(1, 'Ticker required').max(10).toUpperCase(),
-  direction: z.enum(['bought', 'sold']),
-  option_type: z.enum(['call', 'put']),
-  strike_price: z.coerce.number().positive('Strike price must be positive'),
-  expiration_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date'),
-  quantity: z.coerce.number().int().min(1, 'Quantity must be at least 1'),
-  premium: z.coerce.number().positive('Premium must be positive'),
-  date_opened: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date'),
+  account_id: z.coerce.number().int().positive("Select an account"),
+  ticker: z.string().min(1, "Ticker required").max(10).toUpperCase(),
+  direction: z.enum(["bought", "sold"]),
+  option_type: z.enum(["call", "put"]),
+  strike_price: z.coerce.number().positive("Strike price must be positive"),
+  expiration_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date"),
+  quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
+  premium: z.coerce.number().positive("Premium must be positive"),
+  date_opened: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date"),
   notes: z.string().max(1000).optional(),
 });
 
@@ -50,10 +50,10 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      direction: 'sold',
-      option_type: 'put',
+      direction: "sold",
+      option_type: "put",
       quantity: 1,
-      date_opened: format(new Date(), 'yyyy-MM-dd'),
+      date_opened: format(new Date(), "yyyy-MM-dd"),
     },
   });
 
@@ -69,33 +69,44 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
         quantity: editOption.quantity,
         premium: editOption.premium,
         date_opened: editOption.date_opened,
-        notes: editOption.notes ?? '',
+        notes: editOption.notes ?? "",
       });
     } else {
       reset({
-        direction: 'sold',
-        option_type: 'put',
+        direction: "sold",
+        option_type: "put",
         quantity: 1,
-        date_opened: format(new Date(), 'yyyy-MM-dd'),
+        date_opened: format(new Date(), "yyyy-MM-dd"),
       });
     }
   }, [editOption, isOpen, reset]);
 
-  const watchedValues = watch(['direction', 'option_type', 'strike_price', 'premium', 'quantity']);
+  const watchedValues = watch([
+    "direction",
+    "option_type",
+    "strike_price",
+    "premium",
+    "quantity",
+  ]);
   const [direction, optionType, strikePrice, premium, quantity] = watchedValues;
 
-  const breakeven = strikePrice && premium
-    ? calcBreakeven(optionType, Number(strikePrice), Number(premium))
-    : null;
+  const breakeven =
+    strikePrice && premium
+      ? calcBreakeven(optionType, Number(strikePrice), Number(premium))
+      : null;
 
-  const proceeds = strikePrice && premium && quantity
-    ? calcProceeds(direction, Number(premium), Number(quantity))
-    : null;
+  const proceeds =
+    strikePrice && premium && quantity
+      ? calcProceeds(direction, Number(premium), Number(quantity))
+      : null;
 
   const onSubmit = async (data: FormData) => {
     try {
       if (editOption) {
-        await updateOption.mutateAsync({ id: editOption.id, data: data as OptionFormData });
+        await updateOption.mutateAsync({
+          id: editOption.id,
+          data: data as OptionFormData,
+        });
       } else {
         await createOption.mutateAsync(data as OptionFormData);
       }
@@ -112,7 +123,7 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={editOption ? 'Edit Option' : 'Add New Option'}
+      title={editOption ? "Edit Option" : "Add New Option"}
       size="lg"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -125,10 +136,13 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
                 <Select
                   label="Account"
                   required
-                  options={accounts.map((a) => ({ value: a.id, label: a.name }))}
+                  options={accounts.map((a) => ({
+                    value: a.id,
+                    label: a.name,
+                  }))}
                   placeholder="Select account..."
                   error={errors.account_id?.message}
-                  value={field.value ?? ''}
+                  value={field.value ?? ""}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
               )}
@@ -140,8 +154,8 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
               required
               placeholder="e.g. AAPL"
               error={errors.ticker?.message}
-              {...register('ticker')}
-              style={{ textTransform: 'uppercase' }}
+              {...register("ticker")}
+              style={{ textTransform: "uppercase" }}
             />
           </div>
         </div>
@@ -152,9 +166,17 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
               Direction <span className="text-loss ml-1">*</span>
             </label>
             <div className="flex gap-3">
-              {(['sold', 'bought'] as const).map((d) => (
-                <label key={d} className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" value={d} {...register('direction')} className="accent-accent" />
+              {(["sold", "bought"] as const).map((d) => (
+                <label
+                  key={d}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    value={d}
+                    {...register("direction")}
+                    className="accent-accent"
+                  />
                   <span className="text-sm text-slate-300 capitalize">{d}</span>
                 </label>
               ))}
@@ -165,9 +187,17 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
               Type <span className="text-loss ml-1">*</span>
             </label>
             <div className="flex gap-3">
-              {(['call', 'put'] as const).map((t) => (
-                <label key={t} className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" value={t} {...register('option_type')} className="accent-accent" />
+              {(["call", "put"] as const).map((t) => (
+                <label
+                  key={t}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    type="radio"
+                    value={t}
+                    {...register("option_type")}
+                    className="accent-accent"
+                  />
                   <span className="text-sm text-slate-300 capitalize">{t}</span>
                 </label>
               ))}
@@ -184,14 +214,14 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
             placeholder="240.00"
             required
             error={errors.strike_price?.message}
-            {...register('strike_price')}
+            {...register("strike_price")}
           />
           <Input
             label="Expiration Date"
             type="date"
             required
             error={errors.expiration_date?.message}
-            {...register('expiration_date')}
+            {...register("expiration_date")}
           />
         </div>
 
@@ -204,8 +234,8 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
             placeholder="2.40"
             required
             error={errors.premium?.message}
-            hint={direction === 'sold' ? 'Credit received' : 'Debit paid'}
-            {...register('premium')}
+            hint={direction === "sold" ? "Credit received" : "Debit paid"}
+            {...register("premium")}
           />
           <Input
             label="Quantity (contracts)"
@@ -216,7 +246,7 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
             required
             error={errors.quantity?.message}
             hint="1 contract = 100 shares"
-            {...register('quantity')}
+            {...register("quantity")}
           />
         </div>
 
@@ -225,7 +255,7 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
           type="date"
           required
           error={errors.date_opened?.message}
-          {...register('date_opened')}
+          {...register("date_opened")}
         />
 
         {/* Live calculations preview */}
@@ -233,16 +263,18 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
           <div className="bg-bg-elevated border border-slate-700 rounded-lg p-3 space-y-1">
             <div className="flex justify-between text-sm">
               <span className="text-slate-400">Breakeven</span>
-              <span className="text-slate-200 font-mono">{formatPrice(breakeven)}</span>
+              <span className="text-slate-200 font-mono">
+                {formatPrice(breakeven)}
+              </span>
             </div>
             {proceeds !== null && (
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">
-                  {direction === 'sold' ? 'Credit received' : 'Debit paid'}
+                  {direction === "sold" ? "Credit received" : "Debit paid"}
                 </span>
                 <span
                   className={`font-mono font-medium ${
-                    direction === 'sold' ? 'text-profit' : 'text-loss'
+                    direction === "sold" ? "text-profit" : "text-loss"
                   }`}
                 >
                   {formatCurrency(Math.abs(proceeds), false)}
@@ -255,21 +287,26 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
         <Textarea
           label="Notes (optional)"
           placeholder="Any notes about this position..."
-          {...register('notes')}
+          {...register("notes")}
         />
 
         {error && (
           <p className="text-sm text-loss">
-            {(error as Error).message || 'An error occurred. Please try again.'}
+            {(error as Error).message || "An error occurred. Please try again."}
           </p>
         )}
 
         <div className="flex gap-3 pt-2">
-          <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onClose}
+            className="flex-1"
+          >
             Cancel
           </Button>
           <Button type="submit" loading={isLoading} className="flex-1">
-            {editOption ? 'Save Changes' : 'Add Option'}
+            {editOption ? "Save Changes" : "Add Option"}
           </Button>
         </div>
       </form>

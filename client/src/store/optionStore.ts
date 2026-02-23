@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import type { OptionFilters } from '../types/option';
+import { create } from "zustand";
+import type { OptionFilters } from "../types/option";
 
 interface OptionStore {
   filters: OptionFilters;
@@ -8,7 +8,7 @@ interface OptionStore {
 }
 
 const defaultFilters: OptionFilters = {
-  status: 'open',
+  status: "open",
   show_old: false,
   page: 1,
   limit: 50,

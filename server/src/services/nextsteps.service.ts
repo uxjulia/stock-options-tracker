@@ -1,7 +1,7 @@
-import db from '../config/database';
-import { getPrices } from './tickers.service';
+import db from "../config/database";
+import { getPrices } from "./tickers.service";
 
-export type Recommendation = 'sell_covered_call' | 'sell_csp' | 'neutral';
+export type Recommendation = "sell_covered_call" | "sell_csp" | "neutral";
 
 export interface NextStepRecommendation {
   ticker: string;
@@ -13,7 +13,9 @@ export interface NextStepRecommendation {
   is_ignored: boolean;
 }
 
-export async function getNextSteps(userId: number): Promise<NextStepRecommendation[]> {
+export async function getNextSteps(
+  userId: number
+): Promise<NextStepRecommendation[]> {
   // Get all assigned options grouped by ticker (excluding those marked ignore)
   const assignedRows = db
     .prepare(
@@ -53,15 +55,15 @@ export async function getNextSteps(userId: number): Promise<NextStepRecommendati
       const priceInfo = priceData[row.ticker] ?? null;
       const isIgnored = row.is_ignored === 1;
 
-      let recommendation: Recommendation = 'neutral';
-      let rationale = 'Net stock delta is 0. No action needed.';
+      let recommendation: Recommendation = "neutral";
+      let rationale = "Net stock delta is 0. No action needed.";
 
       if (!isIgnored) {
         if (netDelta > 0) {
-          recommendation = 'sell_covered_call';
+          recommendation = "sell_covered_call";
           rationale = `You have a net long position of +${netDelta} shares. Sell ${Math.abs(netDelta) / 100} covered call(s) to collect premium and reduce delta.`;
         } else if (netDelta < 0) {
-          recommendation = 'sell_csp';
+          recommendation = "sell_csp";
           rationale = `You have a net short position of ${netDelta} shares (stock was called away). Sell ${Math.abs(netDelta) / 100} cash-secured put(s) to re-acquire shares at a target price.`;
         }
       }
@@ -71,9 +73,9 @@ export async function getNextSteps(userId: number): Promise<NextStepRecommendati
         current_price: priceInfo?.price ?? null,
         net_stock_delta: netDelta,
         open_contracts_count: openCountMap[row.ticker] ?? 0,
-        recommendation: isIgnored ? 'neutral' : recommendation,
+        recommendation: isIgnored ? "neutral" : recommendation,
         rationale: isIgnored
-          ? 'This ticker is ignored for next steps recommendations.'
+          ? "This ticker is ignored for next steps recommendations."
           : rationale,
         is_ignored: isIgnored,
       };

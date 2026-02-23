@@ -1,10 +1,10 @@
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import { env } from './config/env';
-import apiRoutes from './routes';
-import { errorHandler } from './middleware/errorHandler';
+import express from "express";
+import helmet from "helmet";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import { env } from "./config/env";
+import apiRoutes from "./routes";
+import { errorHandler } from "./middleware/errorHandler";
 
 export function createApp() {
   const app = express();
@@ -18,7 +18,10 @@ export function createApp() {
 
   app.use(
     cors({
-      origin: env.NODE_ENV === 'production' ? false : ['http://localhost:5173', 'http://localhost:3001'],
+      origin:
+        env.NODE_ENV === "production"
+          ? false
+          : ["http://localhost:5173", "http://localhost:3001"],
       credentials: true,
     })
   );
@@ -28,7 +31,7 @@ export function createApp() {
   app.use(cookieParser());
 
   // API routes
-  app.use('/api', apiRoutes);
+  app.use("/api", apiRoutes);
 
   // Error handler (must be last)
   app.use(errorHandler);

@@ -1,6 +1,6 @@
-export type OptionDirection = 'bought' | 'sold';
-export type OptionType = 'call' | 'put';
-export type CloseReason = 'assigned' | 'expired' | 'closed_early';
+export type OptionDirection = "bought" | "sold";
+export type OptionType = "call" | "put";
+export type CloseReason = "assigned" | "expired" | "closed_early";
 
 export interface Option {
   id: number;
@@ -56,7 +56,7 @@ export interface OptionFilters {
   ticker?: string;
   option_type?: OptionType;
   direction?: OptionDirection;
-  status: 'open' | 'closed' | 'all';
+  status: "open" | "closed" | "all";
   show_old: boolean;
   page: number;
   limit: number;

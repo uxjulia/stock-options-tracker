@@ -207,7 +207,9 @@ function OptionRow({
           <span className="text-slate-600">—</span>
         )}
       </td>
-      <td className={`py-3 px-3 text-right font-mono ${getBreakevenColorClass(option, isOpen)}`}>
+      <td
+        className={`py-3 px-3 text-right font-mono ${getBreakevenColorClass(option, isOpen)}`}
+      >
         {formatPrice(option.breakeven)}
       </td>
       <td className="py-3 px-3 text-center">

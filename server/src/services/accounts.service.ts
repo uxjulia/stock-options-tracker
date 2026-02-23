@@ -1,5 +1,5 @@
-import db from '../config/database';
-import type { Account, AccountWithStats } from '../models/account.model';
+import db from "../config/database";
+import type { Account, AccountWithStats } from "../models/account.model";
 
 export function listAccounts(userId: number): AccountWithStats[] {
   return db
@@ -29,16 +29,22 @@ export function listAccounts(userId: number): AccountWithStats[] {
     .all(userId) as AccountWithStats[];
 }
 
-export function getAccount(userId: number, accountId: number): Account | undefined {
+export function getAccount(
+  userId: number,
+  accountId: number
+): Account | undefined {
   return db
-    .prepare('SELECT * FROM accounts WHERE id = ? AND user_id = ?')
+    .prepare("SELECT * FROM accounts WHERE id = ? AND user_id = ?")
     .get(accountId, userId) as Account | undefined;
 }
 
-export function createAccount(userId: number, data: { name: string; description?: string }): Account {
+export function createAccount(
+  userId: number,
+  data: { name: string; description?: string }
+): Account {
   const result = db
     .prepare(
-      'INSERT INTO accounts (user_id, name, description) VALUES (?, ?, ?) RETURNING *'
+      "INSERT INTO accounts (user_id, name, description) VALUES (?, ?, ?) RETURNING *"
     )
     .get(userId, data.name, data.description ?? null) as Account;
   return result;
@@ -53,8 +59,14 @@ export function updateAccount(
   if (!existing) return undefined;
 
   const name = data.name ?? existing.name;
-  const description = data.description !== undefined ? data.description : existing.description;
-  const is_active = data.is_active !== undefined ? (data.is_active ? 1 : 0) : existing.is_active;
+  const description =
+    data.description !== undefined ? data.description : existing.description;
+  const is_active =
+    data.is_active !== undefined
+      ? data.is_active
+        ? 1
+        : 0
+      : existing.is_active;
 
   return db
     .prepare(
@@ -69,7 +81,9 @@ export function updateAccount(
 export function deleteAccount(userId: number, accountId: number): boolean {
   // Check if account has options
   const hasOptions = db
-    .prepare('SELECT COUNT(*) as count FROM options WHERE account_id = ? AND user_id = ?')
+    .prepare(
+      "SELECT COUNT(*) as count FROM options WHERE account_id = ? AND user_id = ?"
+    )
     .get(accountId, userId) as { count: number };
 
   if (hasOptions.count > 0) {
@@ -81,7 +95,7 @@ export function deleteAccount(userId: number, accountId: number): boolean {
   }
 
   const result = db
-    .prepare('DELETE FROM accounts WHERE id = ? AND user_id = ?')
+    .prepare("DELETE FROM accounts WHERE id = ? AND user_id = ?")
     .run(accountId, userId);
   return result.changes > 0;
 }

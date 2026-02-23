@@ -1,4 +1,4 @@
-import apiClient from './client';
+import apiClient from "./client";
 
 export interface PriceData {
   symbol: string;
@@ -8,19 +8,26 @@ export interface PriceData {
   fetchedAt: string;
 }
 
-export async function getPrices(symbols: string[]): Promise<Record<string, PriceData | null>> {
-  const res = await apiClient.get('/tickers/prices', {
-    params: { symbols: symbols.join(',') },
+export async function getPrices(
+  symbols: string[]
+): Promise<Record<string, PriceData | null>> {
+  const res = await apiClient.get("/tickers/prices", {
+    params: { symbols: symbols.join(",") },
   });
   return res.data;
 }
 
-export async function getActivePrices(): Promise<Record<string, PriceData | null>> {
-  const res = await apiClient.get('/tickers/active');
+export async function getActivePrices(): Promise<
+  Record<string, PriceData | null>
+> {
+  const res = await apiClient.get("/tickers/active");
   return res.data;
 }
 
-export async function setManualOverride(symbol: string, price: number): Promise<PriceData> {
+export async function setManualOverride(
+  symbol: string,
+  price: number
+): Promise<PriceData> {
   const res = await apiClient.post(`/tickers/${symbol}/override`, { price });
   return res.data;
 }

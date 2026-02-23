@@ -1,6 +1,6 @@
-export type OptionDirection = 'bought' | 'sold';
-export type OptionType = 'call' | 'put';
-export type CloseReason = 'assigned' | 'expired' | 'closed_early';
+export type OptionDirection = "bought" | "sold";
+export type OptionType = "call" | "put";
+export type CloseReason = "assigned" | "expired" | "closed_early";
 
 export interface OptionRow {
   id: number;

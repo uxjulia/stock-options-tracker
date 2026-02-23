@@ -1,13 +1,17 @@
-import { useState } from 'react';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
-import { Badge } from '../components/ui/Badge';
-import { AccountForm } from '../components/accounts/AccountForm';
-import { ConfirmDialog } from '../components/ui/ConfirmDialog';
-import { Spinner } from '../components/ui/Spinner';
-import { useAccounts, useDeleteAccount, useUpdateAccount } from '../hooks/useAccounts';
-import { formatCurrency } from '../utils/formatters';
-import type { Account } from '../types/account';
+import { useState } from "react";
+import { Button } from "../components/ui/Button";
+import { Card } from "../components/ui/Card";
+import { Badge } from "../components/ui/Badge";
+import { AccountForm } from "../components/accounts/AccountForm";
+import { ConfirmDialog } from "../components/ui/ConfirmDialog";
+import { Spinner } from "../components/ui/Spinner";
+import {
+  useAccounts,
+  useDeleteAccount,
+  useUpdateAccount,
+} from "../hooks/useAccounts";
+import { formatCurrency } from "../utils/formatters";
+import type { Account } from "../types/account";
 
 export function AccountsPage() {
   const [addOpen, setAddOpen] = useState(false);
@@ -47,22 +51,36 @@ export function AccountsPage() {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h2 className="text-base font-semibold text-slate-100 truncate">{account.name}</h2>
+                  <h2 className="text-base font-semibold text-slate-100 truncate">
+                    {account.name}
+                  </h2>
                   {account.is_active === 0 && (
                     <Badge variant="neutral">Inactive</Badge>
                   )}
                 </div>
                 {account.description && (
-                  <p className="text-sm text-slate-500 mb-3">{account.description}</p>
+                  <p className="text-sm text-slate-500 mb-3">
+                    {account.description}
+                  </p>
                 )}
                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
                   <span className="text-slate-400">
-                    <span className="text-slate-200 font-medium">{account.trade_count}</span> trades
+                    <span className="text-slate-200 font-medium">
+                      {account.trade_count}
+                    </span>{" "}
+                    trades
                   </span>
                   <span className="text-slate-400">
-                    <span className="text-slate-200 font-medium">{account.open_count}</span> open
+                    <span className="text-slate-200 font-medium">
+                      {account.open_count}
+                    </span>{" "}
+                    open
                   </span>
-                  <span className={account.realized_pnl >= 0 ? 'text-profit' : 'text-loss'}>
+                  <span
+                    className={
+                      account.realized_pnl >= 0 ? "text-profit" : "text-loss"
+                    }
+                  >
                     {formatCurrency(account.realized_pnl, true)} realized
                   </span>
                 </div>
@@ -85,9 +103,9 @@ export function AccountsPage() {
                       data: { is_active: !account.is_active },
                     })
                   }
-                  title={account.is_active ? 'Deactivate' : 'Activate'}
+                  title={account.is_active ? "Deactivate" : "Activate"}
                 >
-                  {account.is_active ? '⊘' : '◉'}
+                  {account.is_active ? "⊘" : "◉"}
                 </Button>
                 <Button
                   size="sm"
