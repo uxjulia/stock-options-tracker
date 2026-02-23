@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
-import { ChangePasswordModal } from '../ui/ChangePasswordModal';
+import { SettingsModal } from '../ui/SettingsModal';
 
 const pageTitles: Record<string, string> = {
   '/': 'Dashboard',
@@ -15,7 +15,7 @@ export function TopBar() {
   const location = useLocation();
   const { logout } = useAuth();
   const title = pageTitles[location.pathname] ?? 'Option Tracker';
-  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   return (
     <header className="lg:hidden sticky top-0 z-30 bg-bg-surface border-b border-slate-700/50 px-4 py-3 flex items-center justify-between">
@@ -30,9 +30,9 @@ export function TopBar() {
       </div>
       <div className="flex items-center gap-1">
         <button
-          onClick={() => setShowChangePassword(true)}
+          onClick={() => setShowSettings(true)}
           className="text-slate-500 hover:text-slate-300 transition-colors p-1"
-          title="Change password"
+          title="Settings"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -52,10 +52,7 @@ export function TopBar() {
         </button>
       </div>
 
-      <ChangePasswordModal
-        isOpen={showChangePassword}
-        onClose={() => setShowChangePassword(false)}
-      />
+      <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </header>
   );
 }

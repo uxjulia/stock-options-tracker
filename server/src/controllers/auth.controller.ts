@@ -9,6 +9,13 @@ import {
   verifyRefreshToken,
   toPublicUser,
   updatePassword,
+  createUser as createUserService,
+  listUsers as listUsersService,
+  deleteUser as deleteUserService,
+  adminResetPassword as adminResetPasswordService,
+  UsernameConflictError,
+  SelfDeleteError,
+  UserNotFoundError,
 } from '../services/auth.service';
 import type { AuthRequest } from '../middleware/auth';
 
@@ -108,4 +115,79 @@ export async function changePassword(req: AuthRequest, res: Response): Promise<v
 
   await updatePassword(user.id, parsed.data.new_password);
   res.json({ message: 'Password updated successfully' });
+}
+
+export async function createUser(req: AuthRequest, res: Response): Promise<void> {
+  const schema = z.object({
+    username: z.string().min(1),
+    password: z.string().min(8),
+  });
+
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'Invalid request', details: parsed.error.flatten().fieldErrors });
+    return;
+  }
+
+  try {
+    const user = await createUserService(parsed.data.username, parsed.data.password);
+    res.status(201).json({ user });
+  } catch (err) {
+    if (err instanceof UsernameConflictError) {
+      res.status(409).json({ error: 'Username already exists' });
+      return;
+    }
+    throw err;
+  }
+}
+
+export function getUsers(_req: AuthRequest, res: Response): void {
+  const users = listUsersService();
+  res.json({ users });
+}
+
+export async function removeUser(req: AuthRequest, res: Response): Promise<void> {
+  const targetId = Number(req.params.id);
+  if (!Number.isInteger(targetId)) {
+    res.status(400).json({ error: 'Invalid user id' });
+    return;
+  }
+  try {
+    deleteUserService(targetId, req.userId!);
+    res.status(204).end();
+  } catch (err) {
+    if (err instanceof SelfDeleteError) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    if (err instanceof UserNotFoundError) {
+      res.status(404).json({ error: err.message });
+      return;
+    }
+    throw err;
+  }
+}
+
+export async function adminResetPassword(req: AuthRequest, res: Response): Promise<void> {
+  const targetId = Number(req.params.id);
+  if (!Number.isInteger(targetId)) {
+    res.status(400).json({ error: 'Invalid user id' });
+    return;
+  }
+  const schema = z.object({ new_password: z.string().min(8) });
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'Password must be at least 8 characters' });
+    return;
+  }
+  try {
+    await adminResetPasswordService(targetId, parsed.data.new_password);
+    res.json({ message: 'Password reset successfully' });
+  } catch (err) {
+    if (err instanceof UserNotFoundError) {
+      res.status(404).json({ error: err.message });
+      return;
+    }
+    throw err;
+  }
 }

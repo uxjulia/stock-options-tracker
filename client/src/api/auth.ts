@@ -21,3 +21,21 @@ export async function changePassword(currentPassword: string, newPassword: strin
     new_password: newPassword,
   });
 }
+
+export async function createUser(username: string, password: string): Promise<void> {
+  await apiClient.post('/auth/users', { username, password });
+}
+
+export async function listUsers(): Promise<User[]> {
+  const res = await apiClient.get('/auth/users');
+  return res.data.users;
+}
+
+export async function deleteUser(id: number): Promise<void> {
+  await apiClient.delete(`/auth/users/${id}`);
+}
+
+export async function adminResetPassword(id: number, newPassword: string): Promise<void> {
+  await apiClient.put(`/auth/users/${id}/password`, { new_password: newPassword });
+}
+

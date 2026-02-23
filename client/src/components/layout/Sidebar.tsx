@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '../../utils/cn';
 import { useAuth } from '../../hooks/useAuth';
-import { ChangePasswordModal } from '../ui/ChangePasswordModal';
+import { SettingsModal } from '../ui/SettingsModal';
 
 const navItems = [
   {
@@ -40,8 +40,7 @@ const navItems = [
     label: 'Next Steps',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-          d="M9 5l7 7-7 7" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
       </svg>
     ),
   },
@@ -59,7 +58,7 @@ const navItems = [
 
 export function Sidebar() {
   const { user, logout } = useAuth();
-  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   return (
     <aside className="hidden lg:flex flex-col w-56 bg-bg-surface border-r border-slate-700/50 min-h-screen">
@@ -108,9 +107,9 @@ export function Sidebar() {
           </div>
           <span className="text-sm text-slate-400 flex-1 truncate">{user?.username}</span>
           <button
-            onClick={() => setShowChangePassword(true)}
+            onClick={() => setShowSettings(true)}
             className="text-slate-500 hover:text-slate-300 transition-colors"
-            title="Change password"
+            title="Settings"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -131,10 +130,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      <ChangePasswordModal
-        isOpen={showChangePassword}
-        onClose={() => setShowChangePassword(false)}
-      />
+      <SettingsModal isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </aside>
   );
 }
