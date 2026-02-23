@@ -18,7 +18,10 @@ export function TopBar() {
   const [showSettings, setShowSettings] = useState(false);
 
   return (
-    <header className="lg:hidden sticky top-0 z-30 bg-bg-surface border-b border-slate-700/50 px-4 py-3 flex items-center justify-between">
+    <header
+      className="lg:hidden sticky top-0 z-30 bg-bg-surface border-b border-slate-700/50 px-4 py-3 flex items-center justify-between"
+      style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' }}
+    >
       <div className="flex items-center gap-2">
         <div className="w-7 h-7 bg-accent rounded-lg flex items-center justify-center">
           <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
