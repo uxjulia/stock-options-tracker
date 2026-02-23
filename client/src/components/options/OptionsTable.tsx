@@ -1,20 +1,27 @@
-import { useState } from 'react';
-import { Badge } from '../ui/Badge';
-import { Button } from '../ui/Button';
-import { ConfirmDialog } from '../ui/ConfirmDialog';
-import { OptionForm } from './OptionForm';
-import { CloseOptionForm } from './CloseOptionForm';
-import { useDeleteOption } from '../../hooks/useOptions';
-import { formatCurrency, formatDate, formatPrice } from '../../utils/formatters';
-import { calcDaysUntilExpiry } from '../../utils/calculations';
-import type { Option } from '../../types/option';
+import { useState } from "react";
+import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { OptionForm } from "./OptionForm";
+import { CloseOptionForm } from "./CloseOptionForm";
+import { useDeleteOption } from "../../hooks/useOptions";
+import {
+  formatCurrency,
+  formatDate,
+  formatPrice,
+} from "../../utils/formatters";
+import { calcDaysUntilExpiry } from "../../utils/calculations";
+import type { Option } from "../../types/option";
 
 interface OptionsTableProps {
   options: Option[];
   showAccount?: boolean;
 }
 
-export function OptionsTable({ options, showAccount = true }: OptionsTableProps) {
+export function OptionsTable({
+  options,
+  showAccount = true,
+}: OptionsTableProps) {
   const [editOption, setEditOption] = useState<Option | null>(null);
   const [closeOption, setCloseOption] = useState<Option | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Option | null>(null);
@@ -35,17 +42,41 @@ export function OptionsTable({ options, showAccount = true }: OptionsTableProps)
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-700/50">
-              {showAccount && <th className="text-left py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Account</th>}
-              <th className="text-left py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Ticker</th>
-              <th className="text-left py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
-              <th className="text-right py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Strike</th>
-              <th className="text-right py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider hidden md:table-cell">Price</th>
-              <th className="text-right py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider hidden lg:table-cell">B/Even</th>
-              <th className="text-center py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Exp</th>
-              <th className="text-center py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:table-cell">Exp In</th>
-              <th className="text-center py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:table-cell">Qty</th>
-              <th className="text-right py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">Proceeds</th>
-              <th className="text-right py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider hidden xl:table-cell">Days</th>
+              {showAccount && (
+                <th className="text-left py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Account
+                </th>
+              )}
+              <th className="text-left py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Ticker
+              </th>
+              <th className="text-left py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Type
+              </th>
+              <th className="text-right py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Strike
+              </th>
+              <th className="text-right py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Price
+              </th>
+              <th className="text-right py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                B/Even
+              </th>
+              <th className="text-center py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Exp
+              </th>
+              <th className="text-center py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:table-cell">
+                Exp In
+              </th>
+              <th className="text-center py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:table-cell">
+                Qty
+              </th>
+              <th className="text-right py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider">
+                Proceeds
+              </th>
+              <th className="text-right py-3 px-3 text-xs font-medium text-slate-500 uppercase tracking-wider hidden xl:table-cell">
+                Days
+              </th>
               <th className="py-3 px-3"></th>
             </tr>
           </thead>
@@ -98,6 +129,25 @@ export function OptionsTable({ options, showAccount = true }: OptionsTableProps)
   );
 }
 
+function getBreakevenColorClass(option: Option, isOpen: boolean): string {
+  if (!option.current_price || !isOpen) return "text-slate-400";
+
+  const { direction, option_type, current_price, breakeven } = option;
+
+  if (current_price === breakeven) return "text-slate-400";
+
+  // Bought call / Sold put: good if price is above breakeven
+  // Sold call / Bought put: good if price is below breakeven
+  const priceAboveBreakeven = current_price > breakeven;
+  const isGood =
+    (option_type === "call" && direction === "bought") ||
+    (option_type === "put" && direction === "sold")
+      ? priceAboveBreakeven
+      : !priceAboveBreakeven;
+
+  return isGood ? "text-profit" : "text-loss";
+}
+
 function OptionRow({
   option,
   showAccount,
@@ -119,45 +169,55 @@ function OptionRow({
   return (
     <tr className="hover:bg-bg-surface/50 transition-colors">
       {showAccount && (
-        <td className="py-3 px-3 text-slate-400 text-xs whitespace-nowrap">{option.account_name}</td>
+        <td className="py-3 px-3 text-slate-400 text-xs whitespace-nowrap">
+          {option.account_name}
+        </td>
       )}
       <td className="py-3 px-3">
         <div className="flex items-center gap-1.5">
           <span className="font-semibold text-slate-100">{option.ticker}</span>
-          <Badge variant={option.direction === 'sold' ? 'success' : 'info'} size="sm">
-            {option.direction === 'sold' ? 'SOLD' : 'BUY'}
+          <Badge
+            variant={option.direction === "sold" ? "success" : "info"}
+            size="sm"
+          >
+            {option.direction === "sold" ? "SOLD" : "BUY"}
           </Badge>
         </div>
       </td>
       <td className="py-3 px-3">
-        <Badge variant={option.option_type === 'call' ? 'info' : 'warning'} size="sm">
+        <Badge
+          variant={option.option_type === "call" ? "info" : "warning"}
+          size="sm"
+        >
           {option.option_type.toUpperCase()}
         </Badge>
       </td>
       <td className="py-3 px-3 text-right font-mono text-slate-200">
         {formatPrice(option.strike_price)}
       </td>
-      <td className="py-3 px-3 text-right font-mono text-slate-300 hidden md:table-cell">
+      <td className="py-3 px-3 text-right font-mono text-slate-300">
         {option.current_price ? (
-          <span className={option.price_stale ? 'text-slate-500' : ''}>
+          <span className={option.price_stale ? "text-slate-500" : ""}>
             {formatPrice(option.current_price)}
-            {option.price_is_manual && <span className="text-xs text-slate-500 ml-1">M</span>}
+            {option.price_is_manual && (
+              <span className="text-xs text-slate-500 ml-1">M</span>
+            )}
           </span>
         ) : (
           <span className="text-slate-600">—</span>
         )}
       </td>
-      <td className="py-3 px-3 text-right font-mono text-slate-400 hidden lg:table-cell">
+      <td className={`py-3 px-3 text-right font-mono ${getBreakevenColorClass(option, isOpen)}`}>
         {formatPrice(option.breakeven)}
       </td>
       <td className="py-3 px-3 text-center">
         <span
           className={
             isCritical
-              ? 'text-danger font-medium'
+              ? "text-danger font-medium"
               : isWarning
-              ? 'text-warning'
-              : 'text-slate-400'
+                ? "text-warning"
+                : "text-slate-400"
           }
         >
           {formatDate(option.expiration_date)}
@@ -168,37 +228,45 @@ function OptionRow({
           <span
             className={
               daysUntilExpiry < 0
-                ? 'text-slate-600'
+                ? "text-slate-600"
                 : isCritical
-                ? 'text-danger font-semibold'
-                : isWarning
-                ? 'text-warning font-medium'
-                : 'text-slate-400'
+                  ? "text-danger font-semibold"
+                  : isWarning
+                    ? "text-warning font-medium"
+                    : "text-slate-400"
             }
           >
-            {daysUntilExpiry < 0 ? 'Expired' : daysUntilExpiry === 0 ? 'Today' : `${daysUntilExpiry}d`}
+            {daysUntilExpiry < 0
+              ? "Expired"
+              : daysUntilExpiry === 0
+                ? "Today"
+                : `${daysUntilExpiry}d`}
           </span>
         ) : (
           <span className="text-slate-600">—</span>
         )}
       </td>
-      <td className="py-3 px-3 text-center text-slate-400 hidden sm:table-cell">{option.quantity}</td>
+      <td className="py-3 px-3 text-center text-slate-400 hidden sm:table-cell">
+        {option.quantity}
+      </td>
       <td className="py-3 px-3 text-right font-mono">
-        <span className={option.proceeds >= 0 ? 'text-profit' : 'text-loss'}>
+        <span className={option.proceeds >= 0 ? "text-profit" : "text-loss"}>
           {formatCurrency(option.proceeds, true)}
         </span>
       </td>
-      <td className="py-3 px-3 text-right text-slate-500 hidden xl:table-cell">{option.days_open}d</td>
+      <td className="py-3 px-3 text-right text-slate-500 hidden xl:table-cell">
+        {option.days_open}d
+      </td>
       <td className="py-3 px-3">
         <div className="flex items-center gap-1 justify-end">
           {option.close_reason && (
             <Badge
               variant={
-                option.close_reason === 'expired'
-                  ? 'success'
-                  : option.close_reason === 'assigned'
-                  ? 'warning'
-                  : 'neutral'
+                option.close_reason === "expired"
+                  ? "success"
+                  : option.close_reason === "assigned"
+                    ? "warning"
+                    : "neutral"
               }
               size="sm"
             >
@@ -206,7 +274,12 @@ function OptionRow({
             </Badge>
           )}
           {isOpen && (
-            <Button size="sm" variant="ghost" onClick={onClose} title="Close option">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={onClose}
+              title="Close option"
+            >
               ✓
             </Button>
           )}

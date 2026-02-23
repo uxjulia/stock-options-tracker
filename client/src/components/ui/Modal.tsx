@@ -57,7 +57,7 @@ export function Modal({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         </div>
 
         {/* Content */}
-        <div className="p-4 sm:p-6">{children}</div>
+        <div className="p-4 pb-24 sm:p-6">{children}</div>
       </div>
     </div>
   );
