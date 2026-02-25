@@ -1,5 +1,5 @@
 {
-  "name": "option-tracker-v2",
+  "name": "stock-options-tracker",
   "private": true,
   "workspaces": [
     "client",
