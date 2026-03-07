@@ -1,0 +1,26 @@
+networks:
+  frontend:
+    external: true
+
+services:
+  app:
+    container_name: options-tracker-app
+    build: .
+    ports:
+      - "3001:3001"
+    volumes:
+      - data:/app/data
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DB_PATH: /app/data/options.db
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      FINNHUB_API_KEY: ${FINNHUB_API_KEY:-}
+      POLYGON_API_KEY: ${POLYGON_API_KEY:-}
+    restart: unless-stopped
+    networks:
+      - frontend
+
+volumes:
+  data:

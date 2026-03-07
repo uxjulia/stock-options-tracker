@@ -363,39 +363,40 @@ function ManageUsersTab({ currentUserId }: { currentUserId: number }) {
               </div>
 
               {/* Actions */}
-              {!isSelf && (
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  {/* Reset password toggle */}
-                  <button
-                    onClick={() => {
-                      if (isReseting) {
-                        setResetingId(null);
-                        setResetPassword("");
-                        setResetError("");
-                      } else {
-                        setResetingId(u.id);
-                        setResetPassword("");
-                        setResetError("");
-                      }
-                    }}
-                    title="Reset password"
-                    className={`p-1.5 rounded-lg transition-colors ${isReseting ? "text-accent bg-accent/10" : "text-slate-500 hover:text-slate-300 hover:bg-slate-700/50"}`}
+
+              <div className="flex items-center gap-1 flex-shrink-0">
+                {/* Reset password toggle */}
+                <button
+                  onClick={() => {
+                    if (isReseting) {
+                      setResetingId(null);
+                      setResetPassword("");
+                      setResetError("");
+                    } else {
+                      setResetingId(u.id);
+                      setResetPassword("");
+                      setResetError("");
+                    }
+                  }}
+                  title="Reset password"
+                  className={`p-1.5 rounded-lg transition-colors ${isReseting ? "text-accent bg-accent/10" : "text-slate-500 hover:text-slate-300 hover:bg-slate-700/50"}`}
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
-                      />
-                    </svg>
-                  </button>
-                  {/* Delete */}
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                    />
+                  </svg>
+                </button>
+                {/* Delete - not available for own account */}
+                {!isSelf && (
                   <button
                     onClick={() => handleDelete(u.id)}
                     disabled={deleteLoadingId === u.id}
@@ -420,8 +421,8 @@ function ManageUsersTab({ currentUserId }: { currentUserId: number }) {
                       </svg>
                     )}
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
 
             {/* Inline reset-password form */}
