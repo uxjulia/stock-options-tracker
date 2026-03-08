@@ -31,6 +31,7 @@ RUN npm ci --workspace=server --omit=dev
 
 # Copy built artifacts
 COPY --from=builder /app/server/dist ./server/dist
+COPY --from=builder /app/server/src/db/schema.sql ./server/dist/db/schema.sql
 COPY --from=builder /app/client/dist ./client/dist
 
 RUN mkdir -p /app/data
