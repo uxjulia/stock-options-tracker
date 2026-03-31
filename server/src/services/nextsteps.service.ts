@@ -7,31 +7,35 @@ export interface NextStepRecommendation {
   ticker: string;
   current_price: number | null;
   net_stock_delta: number;
+  acknowledged_delta: number;
+  effective_delta: number;
   open_contracts_count: number;
   recommendation: Recommendation;
   rationale: string;
-  is_ignored: boolean;
 }
 
 export async function getNextSteps(
   userId: number
 ): Promise<NextStepRecommendation[]> {
-  // Get all assigned options grouped by ticker (excluding those marked ignore)
   const assignedRows = db
     .prepare(
       `SELECT
-        ticker,
-        SUM(stock_delta_applied) AS net_delta,
-        MAX(ignore_next_steps) AS is_ignored
-       FROM options
-       WHERE user_id = ? AND close_reason = 'assigned'
-       GROUP BY ticker`
+        o.ticker,
+        SUM(o.stock_delta_applied) - COALESCE(ts.delta_basis, 0) AS net_delta,
+        COALESCE(ts.acknowledged_delta, 0) AS acknowledged_delta
+       FROM options o
+       LEFT JOIN ticker_settings ts ON ts.ticker = o.ticker AND ts.user_id = o.user_id
+       WHERE o.user_id = ? AND o.close_reason = 'assigned'
+       GROUP BY o.ticker`
     )
-    .all(userId) as { ticker: string; net_delta: number; is_ignored: number }[];
+    .all(userId) as {
+    ticker: string;
+    net_delta: number;
+    acknowledged_delta: number;
+  }[];
 
   if (assignedRows.length === 0) return [];
 
-  // Get open options counts per ticker (to show awareness of pending positions)
   const openCountRows = db
     .prepare(
       `SELECT ticker, COUNT(*) AS open_count
@@ -52,33 +56,31 @@ export async function getNextSteps(
   return assignedRows
     .map((row): NextStepRecommendation => {
       const netDelta = row.net_delta ?? 0;
+      const acknowledgedDelta = row.acknowledged_delta ?? 0;
+      const effectiveDelta = netDelta - acknowledgedDelta;
       const priceInfo = priceData[row.ticker] ?? null;
-      const isIgnored = row.is_ignored === 1;
 
       let recommendation: Recommendation = "neutral";
       let rationale = "Net stock delta is 0. No action needed.";
 
-      if (!isIgnored) {
-        if (netDelta > 0) {
-          recommendation = "sell_covered_call";
-          rationale = `You have a net long position of +${netDelta} shares. Sell ${Math.abs(netDelta) / 100} covered call(s) to collect premium and reduce delta.`;
-        } else if (netDelta < 0) {
-          recommendation = "sell_csp";
-          rationale = `You have a net short position of ${netDelta} shares (stock was called away). Sell ${Math.abs(netDelta) / 100} cash-secured put(s) to re-acquire shares at a target price.`;
-        }
+      if (effectiveDelta > 0) {
+        recommendation = "sell_covered_call";
+        rationale = `You have +${effectiveDelta} shares above your hold target. Sell ${Math.abs(effectiveDelta) / 100} covered call(s) to reduce delta.`;
+      } else if (effectiveDelta < 0) {
+        recommendation = "sell_csp";
+        rationale = `You have ${effectiveDelta} shares below your hold target. Sell ${Math.abs(effectiveDelta) / 100} cash-secured put(s) to re-acquire shares.`;
       }
 
       return {
         ticker: row.ticker,
         current_price: priceInfo?.price ?? null,
         net_stock_delta: netDelta,
+        acknowledged_delta: acknowledgedDelta,
+        effective_delta: effectiveDelta,
         open_contracts_count: openCountMap[row.ticker] ?? 0,
-        recommendation: isIgnored ? "neutral" : recommendation,
-        rationale: isIgnored
-          ? "This ticker is ignored for next steps recommendations."
-          : rationale,
-        is_ignored: isIgnored,
+        recommendation,
+        rationale,
       };
     })
-    .filter((r) => r.net_stock_delta !== 0 || r.is_ignored);
+    .filter((r) => r.effective_delta !== 0);
 }

@@ -10,5 +10,8 @@ router.get("/prices", tickersController.getPrices);
 router.get("/active", tickersController.getActiveTickerPrices);
 router.post("/:symbol/override", tickersController.setOverride);
 router.delete("/:symbol/override", tickersController.clearOverride);
+router.patch("/:symbol/acknowledged-delta", tickersController.setAcknowledgedDelta);
+router.delete("/:symbol/acknowledged-delta", tickersController.clearAcknowledgedDelta);
+router.post("/:symbol/reset-delta", tickersController.resetDeltaBasis);
 
 export default router;

@@ -69,6 +69,24 @@ CREATE INDEX IF NOT EXISTS idx_options_date_opened   ON options(date_opened);
 CREATE INDEX IF NOT EXISTS idx_options_date_closed   ON options(date_closed);
 
 -- ============================================================
+-- TICKER SETTINGS (per-user, per-ticker preferences)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS ticker_settings (
+  id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id             INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ticker              TEXT    NOT NULL,
+  acknowledged_delta  INTEGER NOT NULL DEFAULT 0,  -- hold target (shares user wants to keep)
+  delta_basis         INTEGER NOT NULL DEFAULT 0,  -- raw sum offset at last "Reset Delta"
+  updated_at          TEXT    NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(user_id, ticker)
+);
+
+CREATE INDEX IF NOT EXISTS idx_ticker_settings_user_id ON ticker_settings(user_id);
+
+-- Add delta_basis column to existing ticker_settings tables (idempotent)
+ALTER TABLE ticker_settings ADD COLUMN delta_basis INTEGER NOT NULL DEFAULT 0;
+
+-- ============================================================
 -- TICKER PRICE CACHE
 -- ============================================================
 CREATE TABLE IF NOT EXISTS ticker_price_cache (

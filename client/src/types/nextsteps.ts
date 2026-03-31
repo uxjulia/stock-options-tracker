@@ -4,8 +4,9 @@ export interface NextStepRecommendation {
   ticker: string;
   current_price: number | null;
   net_stock_delta: number;
+  acknowledged_delta: number;
+  effective_delta: number;
   open_contracts_count: number;
   recommendation: Recommendation;
   rationale: string;
-  is_ignored: boolean;
 }

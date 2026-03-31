@@ -127,3 +127,46 @@ export function getActiveTickersForUser(userId: number): string[] {
     .all(userId) as { ticker: string }[];
   return rows.map((r) => r.ticker);
 }
+
+export function setAcknowledgedDelta(
+  userId: number,
+  ticker: string,
+  delta: number
+): void {
+  db.prepare(
+    `INSERT INTO ticker_settings (user_id, ticker, acknowledged_delta, updated_at)
+     VALUES (?, ?, ?, datetime('now'))
+     ON CONFLICT(user_id, ticker) DO UPDATE SET
+       acknowledged_delta = excluded.acknowledged_delta,
+       updated_at = excluded.updated_at`
+  ).run(userId, ticker.toUpperCase(), delta);
+}
+
+export function clearAcknowledgedDelta(
+  userId: number,
+  ticker: string
+): void {
+  db.prepare(
+    `UPDATE ticker_settings SET acknowledged_delta = 0, updated_at = datetime('now')
+     WHERE user_id = ? AND ticker = ?`
+  ).run(userId, ticker.toUpperCase());
+}
+
+export function resetDeltaBasis(userId: number, ticker: string): void {
+  const symbol = ticker.toUpperCase();
+  const row = db
+    .prepare(
+      `SELECT COALESCE(SUM(stock_delta_applied), 0) AS raw_sum
+       FROM options WHERE user_id = ? AND ticker = ? AND close_reason = 'assigned'`
+    )
+    .get(userId, symbol) as { raw_sum: number };
+
+  db.prepare(
+    `INSERT INTO ticker_settings (user_id, ticker, delta_basis, acknowledged_delta, updated_at)
+     VALUES (?, ?, ?, 0, datetime('now'))
+     ON CONFLICT(user_id, ticker) DO UPDATE SET
+       delta_basis = excluded.delta_basis,
+       acknowledged_delta = 0,
+       updated_at = excluded.updated_at`
+  ).run(userId, symbol, row.raw_sum);
+}

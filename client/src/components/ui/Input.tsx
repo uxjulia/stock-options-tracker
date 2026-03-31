@@ -20,7 +20,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           className={cn(
-            "bg-bg-elevated border rounded-lg px-3 py-2 text-sm text-slate-100 placeholder-slate-500",
+            "bg-bg-elevated border rounded-sm px-3 py-2 text-sm text-slate-100 placeholder-slate-500",
             "focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent",
             "transition-colors",
             error ? "border-loss" : "border-slate-600",

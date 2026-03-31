@@ -7,6 +7,7 @@ import { Button } from "../components/ui/Button";
 import { Spinner } from "../components/ui/Spinner";
 import { useOptions } from "../hooks/useOptions";
 import { useUIStore } from "../store/uiStore";
+import { Plus } from "lucide-react";
 
 export function DashboardPage() {
   const [addOpen, setAddOpen] = useState(false);
@@ -18,11 +19,11 @@ export function DashboardPage() {
   });
 
   return (
-    <div className="space-y-6 max-w-7xl">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-slate-100">Dashboard</h1>
         <Button onClick={() => setAddOpen(true)} size="sm">
-          + Add Option
+          <Plus size={12} strokeWidth={3} /> Add Option
         </Button>
       </div>
 
@@ -45,7 +46,7 @@ export function DashboardPage() {
           </label>
         </div>
 
-        <div className="bg-bg-surface border border-slate-700/50 rounded-xl overflow-hidden">
+        <div className="bg-bg-surface border border-slate-700/50 rounded-md overflow-hidden">
           {isLoading ? (
             <div className="flex justify-center py-12">
               <Spinner />

@@ -24,11 +24,19 @@ export function runMigrations(): void {
     try {
       db.exec(statement + ";");
     } catch (err) {
-      // Ignore errors on PRAGMA statements which may already be set
       const upper = statement.toUpperCase().trimStart();
-      if (!upper.startsWith("PRAGMA")) {
-        throw err;
+      // Ignore errors on PRAGMA statements which may already be set
+      if (upper.startsWith("PRAGMA")) continue;
+      // Ignore duplicate column errors from ALTER TABLE ADD COLUMN (idempotent re-runs)
+      if (
+        upper.startsWith("ALTER TABLE") &&
+        upper.includes("ADD COLUMN") &&
+        err instanceof Error &&
+        err.message.includes("duplicate column name")
+      ) {
+        continue;
       }
+      throw err;
     }
   }
 
