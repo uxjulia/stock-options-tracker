@@ -18,7 +18,7 @@ export function SummaryCards() {
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="bg-bg-surface border border-slate-700/50 rounded-xl p-4 sm:p-6 flex items-center justify-center h-24"
+            className="bg-bg-surface border border-slate-700/50 rounded-md p-4 sm:p-6 flex items-center justify-center h-24"
           >
             <Spinner size="sm" />
           </div>

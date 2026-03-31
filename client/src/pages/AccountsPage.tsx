@@ -31,7 +31,7 @@ export function AccountsPage() {
   }
 
   return (
-    <div className="space-y-4 max-w-3xl">
+    <div className="space-y-4 max-w-7xl mx-auto">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-slate-100">Accounts</h1>
         <Button onClick={() => setAddOpen(true)} size="sm">

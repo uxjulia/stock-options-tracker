@@ -330,7 +330,7 @@ function ManageUsersTab({ currentUserId }: { currentUserId: number }) {
         return (
           <div
             key={u.id}
-            className="rounded-xl border border-slate-700/60 bg-bg-elevated overflow-hidden"
+            className="rounded-md border border-slate-700/60 bg-bg-elevated overflow-hidden"
           >
             {/* User row */}
             <div className="flex items-center gap-3 px-4 py-3">
@@ -499,7 +499,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Settings" size="sm">
       {/* Tab bar */}
-      <div className="flex gap-1 p-1 bg-bg-elevated rounded-xl mb-5">
+      <div className="flex gap-1 p-1 bg-bg-elevated rounded-md mb-5">
         {tabs.map((tab) => (
           <button
             key={tab.id}

@@ -24,7 +24,7 @@ export function NextStepsPage() {
   const hasSteps = steps && steps.length > 0;
 
   return (
-    <div className="space-y-4 max-w-3xl">
+    <div className="space-y-4 max-w-7xl mx-auto">
       <div>
         <h1 className="text-xl font-bold text-slate-100 mb-1">Next Steps</h1>
         <p className="text-sm text-slate-500">
@@ -88,7 +88,7 @@ function NextStepItem({
   }[step.recommendation];
 
   return (
-    <div className="bg-bg-surface border border-slate-700/50 rounded-xl p-4 sm:p-5">
+    <div className="bg-bg-surface border border-slate-700/50 rounded-md p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div>
           <div className="flex items-center gap-2 mb-0.5">
@@ -131,7 +131,7 @@ function NextStepItem({
 
       {!step.is_ignored && step.recommendation !== "neutral" && (
         <div
-          className={`rounded-lg p-3 mb-3 border text-sm text-slate-300 ${
+          className={`rounded-md p-3 mb-3 border text-sm text-slate-300 ${
             isPositiveDelta
               ? "bg-warning/10 border-warning/30"
               : "bg-accent/10 border-accent/30"
@@ -142,7 +142,7 @@ function NextStepItem({
       )}
 
       {step.is_ignored && (
-        <div className="rounded-lg p-3 mb-3 bg-slate-700/30 border border-slate-600/30">
+        <div className="rounded-md p-3 mb-3 bg-slate-700/30 border border-slate-600/30">
           <p className="text-sm text-slate-500 italic">
             This ticker is excluded from next steps recommendations.
           </p>
@@ -152,7 +152,7 @@ function NextStepItem({
       <div className="flex gap-2">
         {!step.is_ignored && step.recommendation !== "neutral" && (
           <Button size="sm" onClick={() => onAddOption(step.ticker)}>
-            Add Option →
+            + Add Option
           </Button>
         )}
         {optionId && (
@@ -164,7 +164,7 @@ function NextStepItem({
               toggleIgnore.mutate({ id: optionId, ignore: !step.is_ignored })
             }
           >
-            {step.is_ignored ? "Resume Tracking" : "Ignore Ticker"}
+            {step.is_ignored ? "Resume Tracking" : "Ignore"}
           </Button>
         )}
       </div>

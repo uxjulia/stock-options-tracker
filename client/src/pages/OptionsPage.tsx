@@ -31,11 +31,11 @@ export function OptionsPage() {
         </Button>
       </div>
 
-      <div className="bg-bg-surface border border-slate-700/50 rounded-xl p-4">
+      <div className="bg-bg-surface border border-slate-700/50 rounded-md p-4">
         <OptionsFilters />
       </div>
 
-      <div className="bg-bg-surface border border-slate-700/50 rounded-xl overflow-hidden">
+      <div className="bg-bg-surface border border-slate-700/50 rounded-md overflow-hidden">
         {isLoading ? (
           <div className="flex justify-center py-12">
             <Spinner />

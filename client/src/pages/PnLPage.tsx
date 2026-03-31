@@ -43,12 +43,12 @@ export function PnLPage() {
   }));
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-xl font-bold text-slate-100">P&L Analytics</h1>
         <div className="flex items-center gap-3">
           <select
-            className="bg-bg-elevated border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-slate-300"
+            className="bg-bg-elevated border border-slate-600 rounded-md px-3 py-1.5 text-sm text-slate-300"
             value={year ?? ""}
             onChange={(e) =>
               setYear(e.target.value ? Number(e.target.value) : undefined)
@@ -114,7 +114,7 @@ export function PnLPage() {
 
       {/* Tab switch */}
       <div>
-        <div className="flex gap-1 bg-bg-elevated rounded-lg p-1 w-fit mb-4">
+        <div className="flex gap-1 bg-bg-elevated rounded-md p-1 w-fit mb-4">
           {(["account", "ticker"] as Tab[]).map((t) => (
             <button
               key={t}
@@ -139,7 +139,7 @@ export function PnLPage() {
                 <PnLChart data={accountChartData} />
               )}
             </Card>
-            <div className="bg-bg-surface border border-slate-700/50 rounded-xl overflow-hidden">
+            <div className="bg-bg-surface border border-slate-700/50 rounded-md overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-700/50">
@@ -198,7 +198,7 @@ export function PnLPage() {
                 <PnLChart data={tickerChartData} />
               )}
             </Card>
-            <div className="bg-bg-surface border border-slate-700/50 rounded-xl overflow-hidden">
+            <div className="bg-bg-surface border border-slate-700/50 rounded-md overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-700/50">
