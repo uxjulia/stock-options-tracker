@@ -12,6 +12,7 @@ import {
 } from "../../utils/formatters";
 import { calcDaysUntilExpiry } from "../../utils/calculations";
 import type { Option } from "../../types/option";
+import { Pencil, SquareCheckBig, X } from "lucide-react";
 
 interface OptionsTableProps {
   options: Option[];
@@ -282,14 +283,14 @@ function OptionRow({
               onClick={onClose}
               title="Close option"
             >
-              ✓
+              <SquareCheckBig size={14} />
             </Button>
           )}
           <Button size="sm" variant="ghost" onClick={onEdit} title="Edit">
-            ✏
+            <Pencil size={14} />
           </Button>
           <Button size="sm" variant="ghost" onClick={onDelete} title="Delete">
-            ✕
+            <X size={14} />
           </Button>
         </div>
       </td>

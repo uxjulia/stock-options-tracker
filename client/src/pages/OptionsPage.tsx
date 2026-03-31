@@ -7,6 +7,7 @@ import { Spinner } from "../components/ui/Spinner";
 import { useOptions } from "../hooks/useOptions";
 import { useOptionStore } from "../store/optionStore";
 import { useUIStore } from "../store/uiStore";
+import { Plus } from "lucide-react";
 
 export function OptionsPage() {
   const [addOpen, setAddOpen] = useState(false);
@@ -27,7 +28,8 @@ export function OptionsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-slate-100">Options</h1>
         <Button onClick={() => setAddOpen(true)} size="sm">
-          + Add Option
+          <Plus size={12} strokeWidth={3} />
+          Add Option
         </Button>
       </div>
 

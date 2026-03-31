@@ -11,6 +11,7 @@ import {
   Wallet,
   Settings,
   LogOut,
+  TrendingUp,
 } from "lucide-react";
 
 const navItems = [
@@ -51,19 +52,7 @@ export function Sidebar() {
       <div className="px-6 py-5 border-b border-slate-700/50">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-            <svg
-              className="w-5 h-5 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-              />
-            </svg>
+            <TrendingUp size={20} color="white" />
           </div>
           <span className="font-semibold text-slate-100">Option Tracker</span>
         </div>

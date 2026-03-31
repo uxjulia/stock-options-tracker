@@ -1,3 +1,5 @@
+> AI Disclosure: This app was heavily vibe coded with Claude Code.
+
 # Stock Options Tracker
 
 A self-hosted personal options trading tracker with a React frontend and Express/SQLite backend.

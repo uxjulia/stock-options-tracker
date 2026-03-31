@@ -12,7 +12,7 @@ import {
 } from "../hooks/useAccounts";
 import { formatCurrency } from "../utils/formatters";
 import type { Account } from "../types/account";
-import { Ban, CircleCheck, Pencil, X } from "lucide-react";
+import { Ban, CircleCheck, Pencil, X, Plus } from "lucide-react";
 
 export function AccountsPage() {
   const [addOpen, setAddOpen] = useState(false);
@@ -36,7 +36,7 @@ export function AccountsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-slate-100">Accounts</h1>
         <Button onClick={() => setAddOpen(true)} size="sm">
-          + Add Account
+          <Plus size={12} strokeWidth={3} /> Add Account
         </Button>
       </div>
 
