@@ -56,3 +56,27 @@ export function clearOverride(req: AuthRequest, res: Response): void {
   }
   res.json(data);
 }
+
+export function setAcknowledgedDelta(req: AuthRequest, res: Response): void {
+  const parsed = z.object({ delta: z.number().int() }).safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: 'An integer "delta" is required' });
+    return;
+  }
+  tickersService.setAcknowledgedDelta(
+    req.userId!,
+    req.params.symbol,
+    parsed.data.delta
+  );
+  res.json({ ok: true });
+}
+
+export function clearAcknowledgedDelta(req: AuthRequest, res: Response): void {
+  tickersService.clearAcknowledgedDelta(req.userId!, req.params.symbol);
+  res.json({ ok: true });
+}
+
+export function resetDeltaBasis(req: AuthRequest, res: Response): void {
+  tickersService.resetDeltaBasis(req.userId!, req.params.symbol);
+  res.json({ ok: true });
+}

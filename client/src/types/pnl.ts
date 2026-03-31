@@ -11,6 +11,9 @@ export interface PnLByTicker {
   trade_count: number;
   win_count: number;
   realized_pnl: number;
+  net_stock_delta: number;
+  hold_target: number;
+  effective_delta: number;
 }
 
 export interface MonthlyPnL {

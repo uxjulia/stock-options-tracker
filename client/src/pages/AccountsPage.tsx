@@ -12,6 +12,7 @@ import {
 } from "../hooks/useAccounts";
 import { formatCurrency } from "../utils/formatters";
 import type { Account } from "../types/account";
+import { Ban, CircleCheck, Pencil, X } from "lucide-react";
 
 export function AccountsPage() {
   const [addOpen, setAddOpen] = useState(false);
@@ -92,7 +93,7 @@ export function AccountsPage() {
                   onClick={() => setEditAccount(account)}
                   title="Edit account"
                 >
-                  ✏
+                  <Pencil size={14} />
                 </Button>
                 <Button
                   size="sm"
@@ -105,7 +106,11 @@ export function AccountsPage() {
                   }
                   title={account.is_active ? "Deactivate" : "Activate"}
                 >
-                  {account.is_active ? "⊘" : "◉"}
+                  {account.is_active ? (
+                    <Ban size={14} />
+                  ) : (
+                    <CircleCheck size={14} />
+                  )}
                 </Button>
                 <Button
                   size="sm"
@@ -113,7 +118,7 @@ export function AccountsPage() {
                   onClick={() => setDeleteTarget(account)}
                   title="Delete account"
                 >
-                  ✕
+                  <X size={14} />
                 </Button>
               </div>
             </div>

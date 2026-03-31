@@ -13,6 +13,9 @@ export interface PnLByTicker {
   trade_count: number;
   win_count: number;
   realized_pnl: number;
+  net_stock_delta: number;
+  hold_target: number;
+  effective_delta: number;
 }
 
 export interface MonthlyPnL {
@@ -101,7 +104,7 @@ export function getPnLByTicker(
     params.push(String(year));
   }
 
-  return db
+  const pnlRows = db
     .prepare(
       `SELECT
         o.ticker,
@@ -125,7 +128,35 @@ export function getPnLByTicker(
       GROUP BY o.ticker
       ORDER BY realized_pnl DESC`
     )
-    .all(...params) as PnLByTicker[];
+    .all(...params) as Omit<PnLByTicker, "net_stock_delta" | "hold_target" | "effective_delta">[];
+
+  // Delta info is lifetime (not filtered by year/account)
+  const deltaRows = db
+    .prepare(
+      `SELECT
+        o.ticker,
+        SUM(o.stock_delta_applied) - COALESCE(ts.delta_basis, 0) AS net_stock_delta,
+        COALESCE(ts.acknowledged_delta, 0) AS hold_target
+       FROM options o
+       LEFT JOIN ticker_settings ts ON ts.ticker = o.ticker AND ts.user_id = o.user_id
+       WHERE o.user_id = ? AND o.close_reason = 'assigned'
+       GROUP BY o.ticker`
+    )
+    .all(userId) as { ticker: string; net_stock_delta: number; hold_target: number }[];
+
+  const deltaMap = new Map(deltaRows.map((r) => [r.ticker, r]));
+
+  return pnlRows.map((row) => {
+    const delta = deltaMap.get(row.ticker);
+    const netStockDelta = delta?.net_stock_delta ?? 0;
+    const holdTarget = delta?.hold_target ?? 0;
+    return {
+      ...row,
+      net_stock_delta: netStockDelta,
+      hold_target: holdTarget,
+      effective_delta: netStockDelta - holdTarget,
+    };
+  });
 }
 
 export function getPnLSummary(userId: number): PnLSummary {
