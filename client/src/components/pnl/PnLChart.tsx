@@ -20,7 +20,7 @@ interface PnLChartProps {
   height?: number;
 }
 
-export function PnLChart({ data, height = 240 }: PnLChartProps) {
+export const PnLChart = ({ data, height = 240 }: PnLChartProps) => {
   if (data.length === 0) {
     return (
       <div
@@ -74,4 +74,4 @@ export function PnLChart({ data, height = 240 }: PnLChartProps) {
       </BarChart>
     </ResponsiveContainer>
   );
-}
+};

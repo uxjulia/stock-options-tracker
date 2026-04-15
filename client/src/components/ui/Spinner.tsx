@@ -5,7 +5,7 @@ interface SpinnerProps {
   className?: string;
 }
 
-export function Spinner({ size = "md", className }: SpinnerProps) {
+export const Spinner = ({ size = "md", className }: SpinnerProps) => {
   return (
     <svg
       className={cn(
@@ -35,12 +35,12 @@ export function Spinner({ size = "md", className }: SpinnerProps) {
       />
     </svg>
   );
-}
+};
 
-export function LoadingScreen() {
+export const LoadingScreen = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-bg-base">
       <Spinner size="lg" />
     </div>
   );
-}
+};

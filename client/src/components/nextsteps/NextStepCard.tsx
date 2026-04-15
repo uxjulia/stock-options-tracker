@@ -16,7 +16,10 @@ const RECOMMENDATION_LABELS: Record<string, string> = {
   neutral: "No Action Needed",
 };
 
-export function NextStepCard({ recommendation, onAddOption }: NextStepCardProps) {
+export const NextStepCard = ({
+  recommendation,
+  onAddOption,
+}: NextStepCardProps) => {
   const { setDelta, isPending } = useAcknowledgedDelta();
   const [showHoldTarget, setShowHoldTarget] = useState(false);
   const [holdTargetInput, setHoldTargetInput] = useState("");
@@ -49,7 +52,9 @@ export function NextStepCard({ recommendation, onAddOption }: NextStepCardProps)
   }
 
   function handleOpenHoldTarget() {
-    setHoldTargetInput(acknowledged_delta > 0 ? String(acknowledged_delta) : "");
+    setHoldTargetInput(
+      acknowledged_delta > 0 ? String(acknowledged_delta) : ""
+    );
     setShowHoldTarget(true);
   }
 
@@ -177,11 +182,15 @@ export function NextStepCard({ recommendation, onAddOption }: NextStepCardProps)
           >
             Save
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => setShowHoldTarget(false)}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setShowHoldTarget(false)}
+          >
             Cancel
           </Button>
         </div>
       )}
     </div>
   );
-}
+};

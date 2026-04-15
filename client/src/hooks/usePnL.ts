@@ -2,34 +2,34 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as pnlApi from "../api/pnl";
 import { clearAcknowledgedDelta, resetDelta } from "../api/tickers";
 
-export function usePnLSummary() {
+export const usePnLSummary = () => {
   return useQuery({
     queryKey: ["pnl", "summary"],
     queryFn: pnlApi.getPnLSummary,
     staleTime: 2 * 60 * 1000,
   });
-}
+};
 
-export function usePnLByAccount(year?: number) {
+export const usePnLByAccount = (year?: number) => {
   return useQuery({
     queryKey: ["pnl", "by-account", year],
     queryFn: () => pnlApi.getPnLByAccount(year),
     staleTime: 2 * 60 * 1000,
   });
-}
+};
 
-export function usePnLByTicker(params?: {
+export const usePnLByTicker = (params?: {
   account_id?: number;
   year?: number;
-}) {
+}) => {
   return useQuery({
     queryKey: ["pnl", "by-ticker", params],
     queryFn: () => pnlApi.getPnLByTicker(params),
     staleTime: 2 * 60 * 1000,
   });
-}
+};
 
-export function useResumeTracking() {
+export const useResumeTracking = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (ticker: string) => clearAcknowledgedDelta(ticker),
@@ -38,9 +38,9 @@ export function useResumeTracking() {
       queryClient.invalidateQueries({ queryKey: ["next-steps"] });
     },
   });
-}
+};
 
-export function useResetDeltaFromPnL() {
+export const useResetDeltaFromPnL = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (ticker: string) => resetDelta(ticker),
@@ -49,4 +49,4 @@ export function useResetDeltaFromPnL() {
       queryClient.invalidateQueries({ queryKey: ["next-steps"] });
     },
   });
-}
+};

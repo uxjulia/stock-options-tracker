@@ -7,7 +7,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
 }
 
-export function Button({
+export const Button = ({
   variant = "primary",
   size = "md",
   loading = false,
@@ -15,7 +15,7 @@ export function Button({
   children,
   disabled,
   ...props
-}: ButtonProps) {
+}: ButtonProps) => {
   return (
     <button
       className={cn(
@@ -62,4 +62,4 @@ export function Button({
       )}
     </button>
   );
-}
+};

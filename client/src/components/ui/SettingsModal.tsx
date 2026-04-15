@@ -481,7 +481,7 @@ function ManageUsersTab({ currentUserId }: { currentUserId: number }) {
 
 // ─── Main Modal ───────────────────────────────────────────────────────────────
 
-export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("password");
 
@@ -523,4 +523,4 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       )}
     </Modal>
   );
-}
+};

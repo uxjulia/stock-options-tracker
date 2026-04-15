@@ -35,7 +35,11 @@ interface OptionFormProps {
   editOption?: Option;
 }
 
-export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
+export const OptionForm = ({
+  isOpen,
+  onClose,
+  editOption,
+}: OptionFormProps) => {
   const { data: accounts = [] } = useAccounts();
   const createOption = useCreateOption();
   const updateOption = useUpdateOption();
@@ -312,4 +316,4 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
       </form>
     </Modal>
   );
-}
+};

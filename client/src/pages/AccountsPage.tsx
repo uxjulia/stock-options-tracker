@@ -14,7 +14,7 @@ import { formatCurrency } from "../utils/formatters";
 import type { Account } from "../types/account";
 import { Ban, CircleCheck, Pencil, X, Plus } from "lucide-react";
 
-export function AccountsPage() {
+export const AccountsPage = () => {
   const [addOpen, setAddOpen] = useState(false);
   const [editAccount, setEditAccount] = useState<Account | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Account | null>(null);
@@ -148,4 +148,4 @@ export function AccountsPage() {
       />
     </div>
   );
-}
+};

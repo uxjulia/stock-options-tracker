@@ -3,7 +3,7 @@ import { Sidebar } from "./Sidebar";
 import { BottomNav } from "./BottomNav";
 import { TopBar } from "./TopBar";
 
-export function AppShell() {
+export const AppShell = () => {
   return (
     <div className="flex min-h-screen bg-bg-base">
       <Sidebar />
@@ -16,4 +16,4 @@ export function AppShell() {
       <BottomNav />
     </div>
   );
-}
+};

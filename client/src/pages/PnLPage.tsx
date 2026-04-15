@@ -14,7 +14,7 @@ import { formatCurrency, formatPercent } from "../utils/formatters";
 
 type Tab = "account" | "ticker";
 
-export function PnLPage() {
+export const PnLPage = () => {
   const [tab, setTab] = useState<Tab>("account");
   const [year, setYear] = useState<number | undefined>();
 
@@ -202,7 +202,7 @@ export function PnLPage() {
       </div>
     </div>
   );
-}
+};
 
 function TickerTable({
   byTicker,

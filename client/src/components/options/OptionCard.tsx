@@ -12,7 +12,7 @@ import {
 } from "../../utils/formatters";
 import { Pencil, SquareCheckBig, X } from "lucide-react";
 
-export function OptionCard({
+export const OptionCard = ({
   option,
   showAccount,
   onEdit,
@@ -24,7 +24,7 @@ export function OptionCard({
   onEdit: () => void;
   onClose: () => void;
   onDelete: () => void;
-}) {
+}) => {
   const daysUntilExpiry = calcDaysUntilExpiry(option.expiration_date);
   const isOpen = !option.date_closed;
   const isCritical = isOpen && daysUntilExpiry <= 3;
@@ -175,4 +175,4 @@ export function OptionCard({
       </div>
     </div>
   );
-}
+};

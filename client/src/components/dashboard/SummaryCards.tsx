@@ -5,7 +5,7 @@ import { usePnLSummary } from "../../hooks/usePnL";
 import { formatCurrency, formatPercent } from "../../utils/formatters";
 import { calcDaysUntilExpiry } from "../../utils/calculations";
 
-export function SummaryCards() {
+export const SummaryCards = () => {
   const { data: openOptions, isLoading: loadingOptions } = useOptions({
     status: "open",
     limit: 200,
@@ -70,4 +70,4 @@ export function SummaryCards() {
       />
     </div>
   );
-}
+};
