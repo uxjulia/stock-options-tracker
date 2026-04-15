@@ -21,7 +21,11 @@ export function createApp() {
       origin:
         env.NODE_ENV === "production"
           ? false
-          : ["http://localhost:5173", "http://localhost:3001"],
+          : [
+              "http://localhost:5173",
+              "http://localhost:3001",
+              "capacitor://localhost",
+            ],
       credentials: true,
     })
   );

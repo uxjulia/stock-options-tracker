@@ -2,7 +2,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { useAuthStore } from "../store/authStore";
 
 export const apiClient = axios.create({
-  baseURL: "/api",
+  baseURL: `${import.meta.env.PROD ? "https://options.uxj.io/api" : "/api"}`,
   headers: { "Content-Type": "application/json" },
   withCredentials: true, // for httpOnly refresh token cookie
 });

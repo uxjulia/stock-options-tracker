@@ -1,7 +1,7 @@
 import apiClient from "./client";
 import type { PnLByAccount, PnLByTicker, PnLSummary } from "../types/pnl";
 
-export const getPnL = async (year?: number): Promise<PnLByAccount[]> => {
+export const getPnLByAccount = async (year?: number): Promise<PnLByAccount[]> => {
   const res = await apiClient.get("/pnl/by-account", {
     params: year ? { year } : {},
   });
