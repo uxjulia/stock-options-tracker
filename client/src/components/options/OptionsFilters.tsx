@@ -5,7 +5,7 @@ import { useOptionStore } from "../../store/optionStore";
 import { useAccounts } from "../../hooks/useAccounts";
 import { useUIStore } from "../../store/uiStore";
 
-export function OptionsFilters() {
+export const OptionsFilters = () => {
   const { filters, setFilters, resetFilters } = useOptionStore();
   const { showOldOptions, setShowOldOptions } = useUIStore();
   const { data: accounts = [] } = useAccounts();
@@ -117,4 +117,4 @@ export function OptionsFilters() {
       </Button>
     </div>
   );
-}
+};

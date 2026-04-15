@@ -22,11 +22,11 @@ interface AccountFormProps {
   editAccount?: Account;
 }
 
-export function AccountForm({
+export const AccountForm = ({
   isOpen,
   onClose,
   editAccount,
-}: AccountFormProps) {
+}: AccountFormProps) => {
   const createAccount = useCreateAccount();
   const updateAccount = useUpdateAccount();
 
@@ -106,4 +106,4 @@ export function AccountForm({
       </form>
     </Modal>
   );
-}
+};

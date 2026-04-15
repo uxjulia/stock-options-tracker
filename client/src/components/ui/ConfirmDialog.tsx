@@ -11,7 +11,7 @@ interface ConfirmDialogProps {
   loading?: boolean;
 }
 
-export function ConfirmDialog({
+export const ConfirmDialog = ({
   isOpen,
   onClose,
   onConfirm,
@@ -19,7 +19,7 @@ export function ConfirmDialog({
   message,
   confirmLabel = "Confirm",
   loading = false,
-}: ConfirmDialogProps) {
+}: ConfirmDialogProps) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
       <p className="text-slate-300 mb-6">{message}</p>
@@ -33,4 +33,4 @@ export function ConfirmDialog({
       </div>
     </Modal>
   );
-}
+};

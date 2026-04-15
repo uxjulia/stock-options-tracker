@@ -16,7 +16,10 @@ const RECOMMENDATION_LABELS: Record<string, string> = {
   neutral: "No Action Needed",
 };
 
-export function NextStepCard({ recommendation, onAddOption }: NextStepCardProps) {
+export const NextStepCard = ({
+  recommendation,
+  onAddOption,
+}: NextStepCardProps) => {
   const { setDelta, isPending } = useAcknowledgedDelta();
   const [showHoldTarget, setShowHoldTarget] = useState(false);
   const [holdTargetInput, setHoldTargetInput] = useState("");
@@ -34,24 +37,26 @@ export function NextStepCard({ recommendation, onAddOption }: NextStepCardProps)
 
   const isPositiveEffective = effective_delta > 0;
 
-  function handleHoldAsIs() {
+  const handleHoldAsIs = () => {
     // Sets hold target = net_stock_delta, making effective_delta = 0
     setDelta({ ticker, delta: net_stock_delta });
-  }
+  };
 
-  function handleSaveHoldTarget() {
+  const handleSaveHoldTarget = () => {
     const val = parseInt(holdTargetInput, 10);
     if (!isNaN(val) && val >= 0) {
       setDelta({ ticker, delta: val });
       setHoldTargetInput("");
       setShowHoldTarget(false);
     }
-  }
+  };
 
-  function handleOpenHoldTarget() {
-    setHoldTargetInput(acknowledged_delta > 0 ? String(acknowledged_delta) : "");
+  const handleOpenHoldTarget = () => {
+    setHoldTargetInput(
+      acknowledged_delta > 0 ? String(acknowledged_delta) : ""
+    );
     setShowHoldTarget(true);
-  }
+  };
 
   return (
     <div className="bg-bg-surface border border-slate-700/50 rounded-md p-4 sm:p-5">
@@ -177,11 +182,15 @@ export function NextStepCard({ recommendation, onAddOption }: NextStepCardProps)
           >
             Save
           </Button>
-          <Button size="sm" variant="ghost" onClick={() => setShowHoldTarget(false)}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setShowHoldTarget(false)}
+          >
             Cancel
           </Button>
         </div>
       )}
     </div>
   );
-}
+};

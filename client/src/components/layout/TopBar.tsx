@@ -12,7 +12,7 @@ const pageTitles: Record<string, string> = {
   "/accounts": "Accounts",
 };
 
-export function TopBar() {
+export const TopBar = () => {
   const location = useLocation();
   const { logout } = useAuth();
   const title = pageTitles[location.pathname] ?? "Option Tracker";
@@ -52,4 +52,4 @@ export function TopBar() {
       />
     </header>
   );
-}
+};

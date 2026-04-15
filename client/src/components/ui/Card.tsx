@@ -1,13 +1,13 @@
-import React from "react";
+import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
 interface CardProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   onClick?: () => void;
 }
 
-export function Card({ children, className, onClick }: CardProps) {
+export const Card = ({ children, className, onClick }: CardProps) => {
   return (
     <div
       className={cn(
@@ -20,9 +20,9 @@ export function Card({ children, className, onClick }: CardProps) {
       {children}
     </div>
   );
-}
+};
 
-export function StatCard({
+export const StatCard = ({
   label,
   value,
   subvalue,
@@ -32,7 +32,7 @@ export function StatCard({
   value: string | number;
   subvalue?: string;
   valueClass?: string;
-}) {
+}) => {
   return (
     <Card>
       <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">
@@ -44,4 +44,4 @@ export function StatCard({
       {subvalue && <p className="text-xs text-slate-500 mt-1">{subvalue}</p>}
     </Card>
   );
-}
+};

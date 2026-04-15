@@ -14,7 +14,7 @@ import { formatCurrency, formatPercent } from "../utils/formatters";
 
 type Tab = "account" | "ticker";
 
-export function PnLPage() {
+export const PnLPage = () => {
   const [tab, setTab] = useState<Tab>("account");
   const [year, setYear] = useState<number | undefined>();
 
@@ -202,9 +202,9 @@ export function PnLPage() {
       </div>
     </div>
   );
-}
+};
 
-function TickerTable({
+const TickerTable = ({
   byTicker,
   isLoading,
   chartData,
@@ -212,7 +212,7 @@ function TickerTable({
   byTicker: import("../types/pnl").PnLByTicker[];
   isLoading: boolean;
   chartData: { name: string; value: number }[];
-}) {
+}) => {
   const resumeTracking = useResumeTracking();
   const resetDelta = useResetDeltaFromPnL();
 
@@ -335,4 +335,4 @@ function TickerTable({
       </div>
     </div>
   );
-}
+};

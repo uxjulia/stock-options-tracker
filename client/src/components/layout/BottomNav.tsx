@@ -36,7 +36,7 @@ const navItems = [
   },
 ];
 
-export function BottomNav() {
+export const BottomNav = () => {
   return (
     <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-bg-surface border-t border-slate-700/50 z-40 pb-safe">
       <div className="flex">
@@ -59,4 +59,4 @@ export function BottomNav() {
       </div>
     </nav>
   );
-}
+};

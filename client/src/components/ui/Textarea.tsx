@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef } from "react";
 import { cn } from "../../utils/cn";
 
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -6,7 +6,7 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
   error?: string;
 }
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, className, ...props }, ref) => {
     return (
       <div className="flex flex-col gap-1">

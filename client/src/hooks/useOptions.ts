@@ -2,23 +2,23 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as optionsApi from "../api/options";
 import type { OptionFilters } from "../types/option";
 
-export function useOptions(filters: Partial<OptionFilters> = {}) {
+export const useOptions = (filters: Partial<OptionFilters> = {}) => {
   return useQuery({
     queryKey: ["options", filters],
     queryFn: () => optionsApi.listOptions(filters),
     staleTime: 60 * 1000,
   });
-}
+};
 
-export function useOption(id: number) {
+export const useOption = (id: number) => {
   return useQuery({
     queryKey: ["options", id],
     queryFn: () => optionsApi.getOption(id),
     enabled: !!id,
   });
-}
+};
 
-export function useCreateOption() {
+export const useCreateOption = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: optionsApi.createOption,
@@ -28,9 +28,9 @@ export function useCreateOption() {
       queryClient.invalidateQueries({ queryKey: ["next-steps"] });
     },
   });
-}
+};
 
-export function useUpdateOption() {
+export const useUpdateOption = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -45,9 +45,9 @@ export function useUpdateOption() {
       queryClient.invalidateQueries({ queryKey: ["pnl"] });
     },
   });
-}
+};
 
-export function useCloseOption() {
+export const useCloseOption = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -63,9 +63,9 @@ export function useCloseOption() {
       queryClient.invalidateQueries({ queryKey: ["next-steps"] });
     },
   });
-}
+};
 
-export function useDeleteOption() {
+export const useDeleteOption = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: optionsApi.deleteOption,
@@ -74,9 +74,9 @@ export function useDeleteOption() {
       queryClient.invalidateQueries({ queryKey: ["pnl"] });
     },
   });
-}
+};
 
-export function useToggleIgnoreNextSteps() {
+export const useToggleIgnoreNextSteps = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, ignore }: { id: number; ignore: boolean }) =>
@@ -86,4 +86,4 @@ export function useToggleIgnoreNextSteps() {
       queryClient.invalidateQueries({ queryKey: ["next-steps"] });
     },
   });
-}
+};

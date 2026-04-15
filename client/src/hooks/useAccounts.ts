@@ -1,23 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as accountsApi from "../api/accounts";
 
-export function useAccounts() {
+export const useAccounts = () => {
   return useQuery({
     queryKey: ["accounts"],
     queryFn: accountsApi.listAccounts,
     staleTime: 2 * 60 * 1000,
   });
-}
+};
 
-export function useCreateAccount() {
+export const useCreateAccount = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: accountsApi.createAccount,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["accounts"] }),
   });
-}
+};
 
-export function useUpdateAccount() {
+export const useUpdateAccount = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -29,9 +29,9 @@ export function useUpdateAccount() {
     }) => accountsApi.updateAccount(id, data),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["accounts"] }),
   });
-}
+};
 
-export function useDeleteAccount() {
+export const useDeleteAccount = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: accountsApi.deleteAccount,
@@ -40,4 +40,4 @@ export function useDeleteAccount() {
       queryClient.invalidateQueries({ queryKey: ["options"] });
     },
   });
-}
+};

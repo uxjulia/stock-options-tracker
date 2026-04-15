@@ -10,6 +10,7 @@ import {
   deleteUser,
   adminResetPassword,
 } from "../../api/auth";
+import type { FormEvent } from "react";
 import type { User } from "../../types/auth";
 
 type Tab = "password" | "add-user" | "manage";
@@ -21,7 +22,7 @@ interface SettingsModalProps {
 
 // ─── Password Tab ─────────────────────────────────────────────────────────────
 
-function PasswordTab() {
+const PasswordTab = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -29,15 +30,15 @@ function PasswordTab() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  function reset() {
+  const reset = () => {
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
     setError("");
     setSuccess(false);
-  }
+  };
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     if (newPassword.length < 8) {
@@ -55,15 +56,15 @@ function PasswordTab() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
-        err?.response?.data?.error ??
-          "Failed to change password. Please try again."
+        (err as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error ?? "Failed to change password. Please try again."
       );
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   if (success) {
     return (
@@ -125,11 +126,11 @@ function PasswordTab() {
       </Button>
     </form>
   );
-}
+};
 
 // ─── Add User Tab ─────────────────────────────────────────────────────────────
 
-function AddUserTab() {
+const AddUserTab = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -137,15 +138,15 @@ function AddUserTab() {
   const [successName, setSuccessName] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function reset() {
+  const reset = () => {
     setUsername("");
     setPassword("");
     setConfirmPassword("");
     setError("");
     setSuccessName("");
-  }
+  };
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     if (password.length < 8) {
@@ -160,17 +161,19 @@ function AddUserTab() {
     try {
       await createUser(username.trim(), password);
       setSuccessName(username.trim());
-    } catch (err: any) {
-      const status = err?.response?.status;
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response
+        ?.status;
       setError(
         status === 409
           ? "Username already exists."
-          : (err?.response?.data?.error ?? "Failed to create user.")
+          : ((err as { response?: { data?: { error?: string } } })?.response
+              ?.data?.error ?? "Failed to create user.")
       );
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   if (successName) {
     return (
@@ -235,11 +238,11 @@ function AddUserTab() {
       </Button>
     </form>
   );
-}
+};
 
 // ─── Manage Users Tab ─────────────────────────────────────────────────────────
 
-function ManageUsersTab({ currentUserId }: { currentUserId: number }) {
+const ManageUsersTab = ({ currentUserId }: { currentUserId: number }) => {
   const [users, setUsers] = useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [fetchError, setFetchError] = useState("");
@@ -267,7 +270,7 @@ function ManageUsersTab({ currentUserId }: { currentUserId: number }) {
     fetchUsers();
   }, [fetchUsers]);
 
-  async function handleDelete(id: number) {
+  const handleDelete = async (id: number) => {
     setDeleteLoadingId(id);
     try {
       await deleteUser(id);
@@ -277,9 +280,9 @@ function ManageUsersTab({ currentUserId }: { currentUserId: number }) {
     } finally {
       setDeleteLoadingId(null);
     }
-  }
+  };
 
-  async function handleResetSubmit(e: React.FormEvent, id: number) {
+  const handleResetSubmit = async (e: FormEvent, id: number) => {
     e.preventDefault();
     setResetError("");
     if (resetPassword.length < 8) {
@@ -291,12 +294,15 @@ function ManageUsersTab({ currentUserId }: { currentUserId: number }) {
       await adminResetPassword(id, resetPassword);
       setResetingId(null);
       setResetPassword("");
-    } catch (err: any) {
-      setResetError(err?.response?.data?.error ?? "Failed to reset password.");
+    } catch (err: unknown) {
+      setResetError(
+        (err as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error ?? "Failed to reset password."
+      );
     } finally {
       setResetLoading(false);
     }
-  }
+  };
 
   if (loadingUsers) {
     return (
@@ -477,11 +483,11 @@ function ManageUsersTab({ currentUserId }: { currentUserId: number }) {
       })}
     </div>
   );
-}
+};
 
 // ─── Main Modal ───────────────────────────────────────────────────────────────
 
-export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("password");
 
@@ -523,4 +529,4 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       )}
     </Modal>
   );
-}
+};
