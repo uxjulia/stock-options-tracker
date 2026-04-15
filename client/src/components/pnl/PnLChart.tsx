@@ -59,6 +59,8 @@ export const PnLChart = ({ data, height = 240 }: PnLChartProps) => {
             borderRadius: "8px",
             color: "#e2e8f0",
           }}
+          labelStyle={{ color: "#94a3b8" }}
+          itemStyle={{ color: "#e2e8f0" }}
           formatter={(value: number) => [formatCurrency(value), "P&L"]}
           cursor={{ fill: "rgba(255,255,255,0.05)" }}
         />

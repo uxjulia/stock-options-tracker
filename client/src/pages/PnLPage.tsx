@@ -41,7 +41,7 @@ export const PnLPage = () => {
   }));
 
   const monthlyChartData = (summary?.by_month ?? []).map((m) => ({
-    name: m.month.slice(5), // show "MM" portion
+    name: new Date(m.month + "-02").toLocaleString("default", { month: "short" }),
     value: m.realized_pnl,
   }));
 
