@@ -9,7 +9,7 @@ import { useOptions } from "../hooks/useOptions";
 import { useUIStore } from "../store/uiStore";
 import { Plus } from "lucide-react";
 
-export function DashboardPage() {
+export const DashboardPage = () => {
   const [addOpen, setAddOpen] = useState(false);
   const { showOldOptions, setShowOldOptions } = useUIStore();
   const { data, isLoading } = useOptions({
@@ -60,4 +60,4 @@ export function DashboardPage() {
       <OptionForm isOpen={addOpen} onClose={() => setAddOpen(false)} />
     </div>
   );
-}
+};

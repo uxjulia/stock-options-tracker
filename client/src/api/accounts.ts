@@ -1,27 +1,27 @@
 import apiClient from "./client";
 import type { Account } from "../types/account";
 
-export async function listAccounts(): Promise<Account[]> {
+export const listAccounts = async (): Promise<Account[]> => {
   const res = await apiClient.get("/accounts");
   return res.data;
-}
+};
 
-export async function createAccount(data: {
+export const createAccount = async (data: {
   name: string;
   description?: string;
-}): Promise<Account> {
+}): Promise<Account> => {
   const res = await apiClient.post("/accounts", data);
   return res.data;
-}
+};
 
-export async function updateAccount(
+export const updateAccount = async (
   id: number,
   data: { name?: string; description?: string; is_active?: boolean }
-): Promise<Account> {
+): Promise<Account> => {
   const res = await apiClient.put(`/accounts/${id}`, data);
   return res.data;
-}
+};
 
-export async function deleteAccount(id: number): Promise<void> {
+export const deleteAccount = async (id: number): Promise<void> => {
   await apiClient.delete(`/accounts/${id}`);
-}
+};

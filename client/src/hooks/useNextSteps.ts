@@ -6,26 +6,28 @@ import {
   resetDelta,
 } from "../api/tickers";
 
-export function useNextSteps() {
+export const useNextSteps = () => {
   return useQuery({
     queryKey: ["next-steps"],
     queryFn: getNextSteps,
     staleTime: 2 * 60 * 1000,
   });
-}
+};
 
-export function useAcknowledgedDelta() {
+export const useAcknowledgedDelta = () => {
   const queryClient = useQueryClient();
 
   const set = useMutation({
     mutationFn: ({ ticker, delta }: { ticker: string; delta: number }) =>
       setAcknowledgedDelta(ticker, delta),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["next-steps"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["next-steps"] }),
   });
 
   const clear = useMutation({
     mutationFn: (ticker: string) => clearAcknowledgedDelta(ticker),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["next-steps"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["next-steps"] }),
   });
 
   return {
@@ -33,9 +35,9 @@ export function useAcknowledgedDelta() {
     clearDelta: clear.mutate,
     isPending: set.isPending || clear.isPending,
   };
-}
+};
 
-export function useResetDelta() {
+export const useResetDelta = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (ticker: string) => resetDelta(ticker),
@@ -44,4 +46,4 @@ export function useResetDelta() {
       queryClient.invalidateQueries({ queryKey: ["pnl"] });
     },
   });
-}
+};

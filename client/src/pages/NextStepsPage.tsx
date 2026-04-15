@@ -4,7 +4,7 @@ import { OptionForm } from "../components/options/OptionForm";
 import { NextStepCard } from "../components/nextsteps/NextStepCard";
 import { useNextSteps } from "../hooks/useNextSteps";
 
-export function NextStepsPage() {
+export const NextStepsPage = () => {
   const { data: steps, isLoading } = useNextSteps();
   const [addOptionTicker, setAddOptionTicker] = useState<string | null>(null);
 
@@ -54,4 +54,4 @@ export function NextStepsPage() {
       />
     </div>
   );
-}
+};

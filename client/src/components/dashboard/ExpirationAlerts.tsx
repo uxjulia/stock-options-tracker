@@ -3,7 +3,7 @@ import { formatDate, formatPrice } from "../../utils/formatters";
 import { calcDaysUntilExpiry } from "../../utils/calculations";
 import { cn } from "../../utils/cn";
 
-export function ExpirationAlerts() {
+export const ExpirationAlerts = () => {
   const { data } = useOptions({ status: "open", limit: 200 });
   const options = data?.data ?? [];
 
@@ -70,4 +70,4 @@ export function ExpirationAlerts() {
       </div>
     </div>
   );
-}
+};

@@ -9,7 +9,7 @@ import { useOptionStore } from "../store/optionStore";
 import { useUIStore } from "../store/uiStore";
 import { Plus } from "lucide-react";
 
-export function OptionsPage() {
+export const OptionsPage = () => {
   const [addOpen, setAddOpen] = useState(false);
   const { filters } = useOptionStore();
   const { showOldOptions } = useUIStore();
@@ -83,4 +83,4 @@ export function OptionsPage() {
       <OptionForm isOpen={addOpen} onClose={() => setAddOpen(false)} />
     </div>
   );
-}
+};

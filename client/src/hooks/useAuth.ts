@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthStore } from "../store/authStore";
 import * as authApi from "../api/auth";
 
-export function useAuth() {
+export const useAuth = () => {
   const { user, token, setAuth, logout: storeLogout } = useAuthStore();
   const queryClient = useQueryClient();
 
@@ -36,13 +36,13 @@ export function useAuth() {
     loginError: loginMutation.error,
     logout: () => logoutMutation.mutate(),
   };
-}
+};
 
-export function useMe() {
+export const useMe = () => {
   return useQuery({
     queryKey: ["me"],
     queryFn: authApi.getMe,
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
-}
+};

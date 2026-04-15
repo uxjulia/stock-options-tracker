@@ -1,13 +1,13 @@
-import React from "react";
+import type { ButtonHTMLAttributes } from "react";
 import { cn } from "../../utils/cn";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "danger" | "ghost";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
 }
 
-export function Button({
+export const Button = ({
   variant = "primary",
   size = "md",
   loading = false,
@@ -15,7 +15,7 @@ export function Button({
   children,
   disabled,
   ...props
-}: ButtonProps) {
+}: ButtonProps) => {
   return (
     <button
       className={cn(
@@ -62,4 +62,4 @@ export function Button({
       )}
     </button>
   );
-}
+};

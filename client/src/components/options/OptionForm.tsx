@@ -35,7 +35,11 @@ interface OptionFormProps {
   editOption?: Option;
 }
 
-export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
+export const OptionForm = ({
+  isOpen,
+  onClose,
+  editOption,
+}: OptionFormProps) => {
   const { data: accounts = [] } = useAccounts();
   const createOption = useCreateOption();
   const updateOption = useUpdateOption();
@@ -260,7 +264,7 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
 
         {/* Live calculations preview */}
         {breakeven !== null && (
-          <div className="bg-bg-elevated border border-slate-700 rounded-lg p-3 space-y-1">
+          <div className="bg-bg-elevated border border-slate-700 rounded-sm p-3 space-y-1">
             <div className="flex justify-between text-sm">
               <span className="text-slate-400">Breakeven</span>
               <span className="text-slate-200 font-mono">
@@ -312,4 +316,4 @@ export function OptionForm({ isOpen, onClose, editOption }: OptionFormProps) {
       </form>
     </Modal>
   );
-}
+};

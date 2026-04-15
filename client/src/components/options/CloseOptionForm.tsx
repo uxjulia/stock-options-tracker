@@ -31,11 +31,11 @@ const CLOSE_REASON_DESCRIPTIONS = {
   closed_early: "You bought back / sold the option before expiration.",
 };
 
-export function CloseOptionForm({
+export const CloseOptionForm = ({
   isOpen,
   onClose,
   option,
-}: CloseOptionFormProps) {
+}: CloseOptionFormProps) => {
   const closeOption = useCloseOption();
 
   const {
@@ -138,7 +138,7 @@ export function CloseOptionForm({
         )}
 
         {/* P&L preview */}
-        <div className="bg-bg-elevated border border-slate-700 rounded-lg p-3 space-y-1">
+        <div className="bg-bg-elevated border border-slate-700 rounded-sm p-3 space-y-1">
           <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">
             Net Proceeds
           </p>
@@ -207,4 +207,4 @@ export function CloseOptionForm({
       </form>
     </Modal>
   );
-}
+};

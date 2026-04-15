@@ -42,7 +42,7 @@ const navItems = [
   },
 ];
 
-export function Sidebar() {
+export const Sidebar = () => {
   const { user, logout } = useAuth();
   const [showSettings, setShowSettings] = useState(false);
 
@@ -114,4 +114,4 @@ export function Sidebar() {
       />
     </aside>
   );
-}
+};

@@ -14,7 +14,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export function LoginPage() {
+export const LoginPage = () => {
   const { login, loginLoading, isAuthenticated } = useAuth();
   const [loginError, setLoginError] = useState<string | null>(null);
 
@@ -101,4 +101,4 @@ export function LoginPage() {
       </div>
     </div>
   );
-}
+};
