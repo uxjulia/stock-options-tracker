@@ -264,7 +264,7 @@ export const OptionForm = ({
 
         {/* Live calculations preview */}
         {breakeven !== null && (
-          <div className="bg-bg-elevated border border-slate-700 rounded-lg p-3 space-y-1">
+          <div className="bg-bg-elevated border border-slate-700 rounded-sm p-3 space-y-1">
             <div className="flex justify-between text-sm">
               <span className="text-slate-400">Breakeven</span>
               <span className="text-slate-200 font-mono">

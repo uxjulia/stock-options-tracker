@@ -138,7 +138,7 @@ export const CloseOptionForm = ({
         )}
 
         {/* P&L preview */}
-        <div className="bg-bg-elevated border border-slate-700 rounded-lg p-3 space-y-1">
+        <div className="bg-bg-elevated border border-slate-700 rounded-sm p-3 space-y-1">
           <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">
             Net Proceeds
           </p>

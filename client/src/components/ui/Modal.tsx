@@ -41,7 +41,7 @@ export const Modal = ({
       {/* Modal */}
       <div
         className={cn(
-          "relative bg-bg-surface border border-slate-700 rounded-t-2xl sm:rounded-2xl shadow-2xl",
+          "relative bg-bg-surface border border-slate-700 rounded-t-md sm:rounded-md shadow-2xl",
           "w-full max-h-[90vh] overflow-y-auto",
           {
             "sm:max-w-md": size === "sm",
@@ -51,7 +51,7 @@ export const Modal = ({
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-700 sticky top-0 bg-bg-surface rounded-t-2xl sm:rounded-t-2xl z-10">
+        <div className="flex items-center justify-between p-2 sm:p-6 border-b border-slate-700 sticky top-0 bg-bg-surface rounded-t-md sm:rounded-t-md z-10">
           <h2 className="text-lg font-semibold text-slate-100">{title}</h2>
           <button
             onClick={onClose}
@@ -74,7 +74,7 @@ export const Modal = ({
         </div>
 
         {/* Content */}
-        <div className="p-4 pb-24 sm:p-6">{children}</div>
+        <div className="p-4 pb-8 sm:p-6">{children}</div>
       </div>
     </div>
   );

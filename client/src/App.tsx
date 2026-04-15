@@ -62,7 +62,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
-export const App = () => {
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -90,3 +90,5 @@ export const App = () => {
     </QueryClientProvider>
   );
 };
+
+export default App;
