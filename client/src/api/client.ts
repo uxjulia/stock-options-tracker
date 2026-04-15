@@ -23,7 +23,7 @@ let failedQueue: Array<{
   reject: (err: unknown) => void;
 }> = [];
 
-function processQueue(error: unknown, token: string | null) {
+const processQueue = (error: unknown, token: string | null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -32,7 +32,7 @@ function processQueue(error: unknown, token: string | null) {
     }
   });
   failedQueue = [];
-}
+};
 
 apiClient.interceptors.response.use(
   (response) => response,

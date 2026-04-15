@@ -26,7 +26,7 @@ const queryClient = new QueryClient({
   },
 });
 
-function AuthGate({ children }: { children: React.ReactNode }) {
+const AuthGate = ({ children }: { children: React.ReactNode }) => {
   const { setAuth, logout } = useAuthStore();
   const [initializing, setInitializing] = useState(true);
   const queryClient = useQueryClient();
@@ -54,15 +54,15 @@ function AuthGate({ children }: { children: React.ReactNode }) {
 
   if (initializing) return <LoadingScreen />;
   return <>{children}</>;
-}
+};
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const token = useAuthStore((s) => s.token);
   if (!token) return <Navigate to="/login" replace />;
   return <>{children}</>;
-}
+};
 
-export default function App() {
+export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -89,4 +89,4 @@ export default function App() {
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
-}
+};

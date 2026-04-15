@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
+import type { ReactNode } from "react";
 import { cn } from "../../utils/cn";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
   size?: "sm" | "md" | "lg";
 }
 

@@ -204,7 +204,7 @@ export const PnLPage = () => {
   );
 };
 
-function TickerTable({
+const TickerTable = ({
   byTicker,
   isLoading,
   chartData,
@@ -212,7 +212,7 @@ function TickerTable({
   byTicker: import("../types/pnl").PnLByTicker[];
   isLoading: boolean;
   chartData: { name: string; value: number }[];
-}) {
+}) => {
   const resumeTracking = useResumeTracking();
   const resetDelta = useResetDeltaFromPnL();
 
@@ -335,4 +335,4 @@ function TickerTable({
       </div>
     </div>
   );
-}
+};

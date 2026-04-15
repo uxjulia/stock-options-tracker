@@ -8,46 +8,48 @@ export interface PriceData {
   fetchedAt: string;
 }
 
-export async function getPrices(
+export const getPrices = async (
   symbols: string[]
-): Promise<Record<string, PriceData | null>> {
+): Promise<Record<string, PriceData | null>> => {
   const res = await apiClient.get("/tickers/prices", {
     params: { symbols: symbols.join(",") },
   });
   return res.data;
-}
+};
 
-export async function getActivePrices(): Promise<
+export const getActivePrices = async (): Promise<
   Record<string, PriceData | null>
-> {
+> => {
   const res = await apiClient.get("/tickers/active");
   return res.data;
-}
+};
 
-export async function setManualOverride(
+export const setManualOverride = async (
   symbol: string,
   price: number
-): Promise<PriceData> {
+): Promise<PriceData> => {
   const res = await apiClient.post(`/tickers/${symbol}/override`, { price });
   return res.data;
-}
+};
 
-export async function clearManualOverride(symbol: string): Promise<PriceData> {
+export const clearManualOverride = async (
+  symbol: string
+): Promise<PriceData> => {
   const res = await apiClient.delete(`/tickers/${symbol}/override`);
   return res.data;
-}
+};
 
-export async function setAcknowledgedDelta(
+export const setAcknowledgedDelta = async (
   symbol: string,
   delta: number
-): Promise<void> {
+): Promise<void> => {
   await apiClient.patch(`/tickers/${symbol}/acknowledged-delta`, { delta });
-}
+};
 
-export async function clearAcknowledgedDelta(symbol: string): Promise<void> {
+export const clearAcknowledgedDelta = async (symbol: string): Promise<void> => {
   await apiClient.delete(`/tickers/${symbol}/acknowledged-delta`);
-}
+};
 
-export async function resetDelta(symbol: string): Promise<void> {
+export const resetDelta = async (symbol: string): Promise<void> => {
   await apiClient.post(`/tickers/${symbol}/reset-delta`);
-}
+};

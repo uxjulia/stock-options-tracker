@@ -1,54 +1,54 @@
 import apiClient from "./client";
 import type { User } from "../types/auth";
 
-export async function login(
+export const login = async (
   username: string,
   password: string
-): Promise<{ token: string; user: User }> {
+): Promise<{ token: string; user: User }> => {
   const res = await apiClient.post("/auth/login", { username, password });
   return res.data;
-}
+};
 
-export async function logout(): Promise<void> {
+export const logout = async (): Promise<void> => {
   await apiClient.post("/auth/logout");
-}
+};
 
-export async function getMe(): Promise<User> {
+export const getMe = async (): Promise<User> => {
   const res = await apiClient.get("/auth/me");
   return res.data.user;
-}
+};
 
-export async function changePassword(
+export const changePassword = async (
   currentPassword: string,
   newPassword: string
-): Promise<void> {
+): Promise<void> => {
   await apiClient.put("/auth/password", {
     current_password: currentPassword,
     new_password: newPassword,
   });
-}
+};
 
-export async function createUser(
+export const createUser = async (
   username: string,
   password: string
-): Promise<void> {
+): Promise<void> => {
   await apiClient.post("/auth/users", { username, password });
-}
+};
 
-export async function listUsers(): Promise<User[]> {
+export const listUsers = async (): Promise<User[]> => {
   const res = await apiClient.get("/auth/users");
   return res.data.users;
-}
+};
 
-export async function deleteUser(id: number): Promise<void> {
+export const deleteUser = async (id: number): Promise<void> => {
   await apiClient.delete(`/auth/users/${id}`);
-}
+};
 
-export async function adminResetPassword(
+export const adminResetPassword = async (
   id: number,
   newPassword: string
-): Promise<void> {
+): Promise<void> => {
   await apiClient.put(`/auth/users/${id}/password`, {
     new_password: newPassword,
   });
-}
+};

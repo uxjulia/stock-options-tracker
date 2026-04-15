@@ -37,26 +37,26 @@ export const NextStepCard = ({
 
   const isPositiveEffective = effective_delta > 0;
 
-  function handleHoldAsIs() {
+  const handleHoldAsIs = () => {
     // Sets hold target = net_stock_delta, making effective_delta = 0
     setDelta({ ticker, delta: net_stock_delta });
-  }
+  };
 
-  function handleSaveHoldTarget() {
+  const handleSaveHoldTarget = () => {
     const val = parseInt(holdTargetInput, 10);
     if (!isNaN(val) && val >= 0) {
       setDelta({ ticker, delta: val });
       setHoldTargetInput("");
       setShowHoldTarget(false);
     }
-  }
+  };
 
-  function handleOpenHoldTarget() {
+  const handleOpenHoldTarget = () => {
     setHoldTargetInput(
       acknowledged_delta > 0 ? String(acknowledged_delta) : ""
     );
     setShowHoldTarget(true);
-  }
+  };
 
   return (
     <div className="bg-bg-surface border border-slate-700/50 rounded-md p-4 sm:p-5">

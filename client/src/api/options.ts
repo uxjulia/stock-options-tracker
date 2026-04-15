@@ -7,50 +7,50 @@ import type {
   OptionListResponse,
 } from "../types/option";
 
-export async function listOptions(
+export const listOptions = async (
   filters: Partial<OptionFilters> = {}
-): Promise<OptionListResponse> {
+): Promise<OptionListResponse> => {
   const params: Record<string, unknown> = { ...filters };
   const res = await apiClient.get("/options", { params });
   return res.data;
-}
+};
 
-export async function getOption(id: number): Promise<Option> {
+export const getOption = async (id: number): Promise<Option> => {
   const res = await apiClient.get(`/options/${id}`);
   return res.data;
-}
+};
 
-export async function createOption(data: OptionFormData): Promise<Option> {
+export const createOption = async (data: OptionFormData): Promise<Option> => {
   const res = await apiClient.post("/options", data);
   return res.data;
-}
+};
 
-export async function updateOption(
+export const updateOption = async (
   id: number,
   data: Partial<OptionFormData>
-): Promise<Option> {
+): Promise<Option> => {
   const res = await apiClient.put(`/options/${id}`, data);
   return res.data;
-}
+};
 
-export async function closeOption(
+export const closeOption = async (
   id: number,
   data: CloseOptionData
-): Promise<Option> {
+): Promise<Option> => {
   const res = await apiClient.post(`/options/${id}/close`, data);
   return res.data;
-}
+};
 
-export async function deleteOption(id: number): Promise<void> {
+export const deleteOption = async (id: number): Promise<void> => {
   await apiClient.delete(`/options/${id}`);
-}
+};
 
-export async function toggleIgnoreNextSteps(
+export const toggleIgnoreNextSteps = async (
   id: number,
   ignore: boolean
-): Promise<Option> {
+): Promise<Option> => {
   const res = await apiClient.patch(`/options/${id}/ignore-next-steps`, {
     ignore,
   });
   return res.data;
-}
+};

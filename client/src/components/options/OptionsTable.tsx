@@ -23,7 +23,7 @@ interface OptionsTableProps {
   showAccount?: boolean;
 }
 
-function OptionRow({
+const OptionRow = ({
   option,
   showAccount,
   onEdit,
@@ -35,7 +35,7 @@ function OptionRow({
   onEdit: () => void;
   onClose: () => void;
   onDelete: () => void;
-}) {
+}) => {
   const daysUntilExpiry = calcDaysUntilExpiry(option.expiration_date);
   const isOpen = !option.date_closed;
   const isCritical = isOpen && daysUntilExpiry <= 3;
@@ -170,7 +170,7 @@ function OptionRow({
       </td>
     </tr>
   );
-}
+};
 
 export const OptionsTable = ({
   options,
