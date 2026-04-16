@@ -1,73 +1,64 @@
-# React + TypeScript + Vite
+# Option Tracker — Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript SPA for tracking options trades with a wheel-strategy focus. Runs on port 5173 and proxies `/api` requests to the server on port 3001.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Commands
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+| Command | Description |
+|---|---|
+| `npm run dev` | Vite dev server with HMR |
+| `npm run build` | Type-check and build to `dist/` |
+| `npm run lint` | ESLint |
+| `npm run preview` | Preview the production build |
 
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+## Structure
+
 ```
+src/
+  api/          # One file per domain; all use apiClient from api/client.ts
+  components/
+    ui/         # Primitive components (Button, Badge, Input, Modal, Select, etc.)
+    layout/     # App shell, nav, sidebar
+    options/    # Options table, card view, forms, roll chain modal
+  hooks/        # React Query hooks wrapping the api/ layer
+  pages/        # Route-level components
+  store/        # Zustand stores: authStore, optionStore, uiStore
+  types/        # TypeScript interfaces shared across the client
+  utils/        # calculations.ts, formatters.ts, cn.ts (Tailwind class merge)
+```
+
+## Key Features
+
+- **Options table**: desktop table / mobile card view with inline actions (edit, close, delete)
+- **Close option form**: handles expired, assigned, closed early, and rolled close reasons
+- **Roll chain modal**: view full roll history for any option in a chain, with per-leg P&L and chain summary
+- **P&L dashboard**: summary, by-account, and by-ticker breakdowns with year filter
+- **Next Steps**: wheel-strategy recommendations based on net share position from assignments
+- **Expiry alerts**: options expiring within 7 days (warning) or 3 days (danger) are highlighted
+- **PWA**: installable, with NetworkFirst API caching via vite-plugin-pwa
+
+## Authentication
+
+On app load, `AuthGate` in `App.tsx` calls `POST /api/auth/refresh` to silently hydrate the access token from the httpOnly cookie. The Axios interceptor in `api/client.ts` auto-refreshes on 401 and queues any concurrent failed requests.
+
+## Data Fetching
+
+All server state uses React Query (TanStack Query v5). Mutations invalidate relevant query keys (`options`, `pnl`, `next-steps`) on success. Client-only state (auth, UI) lives in Zustand.
+
+## Close Reasons
+
+| Value | Description |
+|---|---|
+| `expired` | Option expired worthless |
+| `assigned` | Option was exercised; shares assigned |
+| `closed_early` | Bought back / sold before expiration |
+| `rolled` | Closed and simultaneously opened a new position at a different strike or expiry |
+
+When closing as `rolled`, the form collects cost-to-close, new strike price, new expiration date, and new premium. A new open option record is auto-created inheriting ticker, account, direction, type, and quantity from the original.

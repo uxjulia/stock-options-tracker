@@ -18,11 +18,39 @@ const createSchema = z.object({
 
 const updateSchema = createSchema.partial();
 
-const closeSchema = z.object({
-  close_reason: z.enum(["assigned", "expired", "closed_early"]),
-  date_closed: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  cost_to_close: z.number().positive().optional(),
-});
+const closeSchema = z
+  .object({
+    close_reason: z.enum(["assigned", "expired", "closed_early", "rolled"]),
+    date_closed: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    cost_to_close: z.number().optional(),
+    new_strike_price: z.number().positive().optional(),
+    new_expiration_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    new_premium: z.number().positive().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.close_reason !== "rolled") return;
+    if (data.new_strike_price == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["new_strike_price"],
+        message: "Required when rolling",
+      });
+    }
+    if (data.new_expiration_date == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["new_expiration_date"],
+        message: "Required when rolling",
+      });
+    }
+    if (data.new_premium == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["new_premium"],
+        message: "Required when rolling",
+      });
+    }
+  });
 
 const filtersSchema = z.object({
   account_id: z.coerce.number().int().positive().optional(),
@@ -128,6 +156,21 @@ export async function close(req: AuthRequest, res: Response): Promise<void> {
     return;
   }
   res.json(option);
+}
+
+export async function getRollChain(
+  req: AuthRequest,
+  res: Response
+): Promise<void> {
+  const chain = await optionsService.getRollChain(
+    req.userId!,
+    Number(req.params.id)
+  );
+  if (!chain) {
+    res.status(404).json({ error: "Option not found" });
+    return;
+  }
+  res.json(chain);
 }
 
 export async function remove(req: AuthRequest, res: Response): Promise<void> {

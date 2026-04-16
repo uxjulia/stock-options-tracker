@@ -76,6 +76,14 @@ export const useDeleteOption = () => {
   });
 };
 
+export const useRollChain = (id: number | null) => {
+  return useQuery({
+    queryKey: ["options", id, "roll-chain"],
+    queryFn: () => optionsApi.getRollChain(id!),
+    enabled: id !== null,
+  });
+};
+
 export const useToggleIgnoreNextSteps = () => {
   const queryClient = useQueryClient();
   return useMutation({

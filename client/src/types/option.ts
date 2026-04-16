@@ -1,6 +1,6 @@
 export type OptionDirection = "bought" | "sold";
 export type OptionType = "call" | "put";
-export type CloseReason = "assigned" | "expired" | "closed_early";
+export type CloseReason = "assigned" | "expired" | "closed_early" | "rolled";
 
 export interface Option {
   id: number;
@@ -19,6 +19,8 @@ export interface Option {
   close_reason: CloseReason | null;
   cost_to_close: number | null;
   stock_delta_applied: number | null;
+  rolled_from_option_id: number | null;
+  roll_net_premium: number | null;
   ignore_next_steps: number;
   notes: string | null;
   created_at: string;
@@ -49,6 +51,9 @@ export interface CloseOptionData {
   close_reason: CloseReason;
   date_closed: string;
   cost_to_close?: number;
+  new_strike_price?: number;
+  new_expiration_date?: string;
+  new_premium?: number;
 }
 
 export interface OptionFilters {

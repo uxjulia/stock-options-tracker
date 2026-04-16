@@ -45,6 +45,11 @@ export const deleteOption = async (id: number): Promise<void> => {
   await apiClient.delete(`/options/${id}`);
 };
 
+export const getRollChain = async (id: number): Promise<Option[]> => {
+  const res = await apiClient.get(`/options/${id}/roll-chain`);
+  return res.data;
+};
+
 export const toggleIgnoreNextSteps = async (
   id: number,
   ignore: boolean

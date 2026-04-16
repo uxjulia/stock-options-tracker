@@ -48,9 +48,13 @@ CREATE TABLE IF NOT EXISTS options (
 
   -- Close tracking (null until closed)
   date_closed         TEXT,
-  close_reason        TEXT    CHECK(close_reason IN ('assigned', 'expired', 'closed_early')),
-  cost_to_close       REAL,              -- per share, only when close_reason = 'closed_early'
+  close_reason        TEXT    CHECK(close_reason IN ('assigned', 'expired', 'closed_early', 'rolled')),
+  cost_to_close       REAL,              -- per share, only when close_reason = 'closed_early' or 'rolled'
   stock_delta_applied INTEGER,           -- computed and stored at close time for 'assigned' options
+
+  -- Roll tracking (null unless this option was opened as part of a roll)
+  rolled_from_option_id INTEGER REFERENCES options(id) ON DELETE SET NULL,
+  roll_net_premium      REAL,            -- new_premium - cost_to_close at roll time
 
   -- Wheel strategy: suppress next-steps recommendation for this ticker's option
   ignore_next_steps   INTEGER NOT NULL DEFAULT 0,
@@ -67,6 +71,11 @@ CREATE INDEX IF NOT EXISTS idx_options_ticker        ON options(ticker);
 CREATE INDEX IF NOT EXISTS idx_options_expiration    ON options(expiration_date);
 CREATE INDEX IF NOT EXISTS idx_options_date_opened   ON options(date_opened);
 CREATE INDEX IF NOT EXISTS idx_options_date_closed   ON options(date_closed);
+CREATE INDEX IF NOT EXISTS idx_options_rolled_from   ON options(rolled_from_option_id);
+
+-- Add roll-tracking columns to existing options tables (idempotent)
+ALTER TABLE options ADD COLUMN rolled_from_option_id INTEGER REFERENCES options(id) ON DELETE SET NULL;
+ALTER TABLE options ADD COLUMN roll_net_premium REAL;
 
 -- ============================================================
 -- TICKER SETTINGS (per-user, per-ticker preferences)

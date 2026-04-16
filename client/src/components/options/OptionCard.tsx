@@ -11,6 +11,7 @@ import {
   formatPrice,
 } from "../../utils/formatters";
 import { Pencil, SquareCheckBig, X } from "lucide-react";
+import { CloseReasonBadge } from "./CloseReasonBadge";
 
 export const OptionCard = ({
   option,
@@ -18,12 +19,14 @@ export const OptionCard = ({
   onEdit,
   onClose,
   onDelete,
+  onViewChain,
 }: {
   option: Option;
   showAccount: boolean;
   onEdit: () => void;
   onClose: () => void;
   onDelete: () => void;
+  onViewChain: () => void;
 }) => {
   const daysUntilExpiry = calcDaysUntilExpiry(option.expiration_date);
   const isOpen = !option.date_closed;
@@ -139,20 +142,11 @@ export const OptionCard = ({
               {option.account_name}
             </span>
           )}
-          {option.close_reason && (
-            <Badge
-              variant={
-                option.close_reason === "expired"
-                  ? "success"
-                  : option.close_reason === "assigned"
-                    ? "warning"
-                    : "neutral"
-              }
-              size="sm"
-            >
-              {option.close_reason}
-            </Badge>
-          )}
+          <CloseReasonBadge
+            closeReason={option.close_reason}
+            rolledFromOptionId={option.rolled_from_option_id}
+            onViewChain={onViewChain}
+          />
         </div>
         <div className="flex items-center gap-1 shrink-0">
           {isOpen && (

@@ -289,6 +289,9 @@ export interface CloseOptionData {
   close_reason: CloseReason;
   date_closed: string;
   cost_to_close?: number;
+  new_strike_price?: number;
+  new_expiration_date?: string;
+  new_premium?: number;
 }
 
 export async function closeOption(
@@ -303,6 +306,18 @@ export async function closeOption(
   if (!existing) return undefined;
   if (existing.date_closed) return undefined; // already closed
 
+  if (data.close_reason === "rolled") {
+    if (data.new_expiration_date == null) {
+      throw new Error("A new expiration date is required");
+    }
+    if (data.new_strike_price == null) {
+      throw new Error("A new strike price is required");
+    }
+    if (data.new_premium == null) {
+      throw new Error("A new premium is required");
+    }
+  }
+
   // Calculate stock delta for assigned options
   const stockDelta =
     data.close_reason === "assigned"
@@ -313,28 +328,76 @@ export async function closeOption(
         )
       : null;
 
-  const updated = db
-    .prepare(
-      `UPDATE options SET
-        date_closed          = @date_closed,
-        close_reason         = @close_reason,
-        cost_to_close        = @cost_to_close,
-        stock_delta_applied  = @stock_delta_applied,
-        updated_at           = datetime('now')
-       WHERE id = @id AND user_id = @userId
-       RETURNING *`
-    )
-    .get({
+  const costToClose =
+    data.close_reason === "closed_early" || data.close_reason === "rolled"
+      ? (data.cost_to_close ?? null)
+      : null;
+
+  const closeStmt = db.prepare(
+    `UPDATE options SET
+      date_closed          = @date_closed,
+      close_reason         = @close_reason,
+      cost_to_close        = @cost_to_close,
+      stock_delta_applied  = @stock_delta_applied,
+      updated_at           = datetime('now')
+     WHERE id = @id AND user_id = @userId
+     RETURNING *`
+  );
+
+  let updated: OptionRow;
+
+  if (data.close_reason === "rolled") {
+    const rollNetPremium = data.new_premium! - (data.cost_to_close ?? 0);
+
+    const insertStmt = db.prepare(
+      `INSERT INTO options
+        (user_id, account_id, ticker, direction, option_type, strike_price,
+         expiration_date, quantity, premium, date_opened,
+         rolled_from_option_id, roll_net_premium, notes)
+       VALUES
+        (@userId, @account_id, @ticker, @direction, @option_type, @strike_price,
+         @expiration_date, @quantity, @premium, @date_opened,
+         @rolled_from_option_id, @roll_net_premium, @notes)`
+    );
+
+    updated = db.transaction(() => {
+      const row = closeStmt.get({
+        date_closed: data.date_closed,
+        close_reason: data.close_reason,
+        cost_to_close: costToClose,
+        stock_delta_applied: stockDelta,
+        id: optionId,
+        userId,
+      }) as OptionRow;
+
+      insertStmt.run({
+        userId,
+        account_id: existing.account_id,
+        ticker: existing.ticker.toUpperCase(),
+        direction: existing.direction,
+        option_type: existing.option_type,
+        strike_price: data.new_strike_price!,
+        expiration_date: data.new_expiration_date!,
+        quantity: existing.quantity,
+        premium: data.new_premium!,
+        date_opened: data.date_closed,
+        rolled_from_option_id: optionId,
+        roll_net_premium: rollNetPremium,
+        notes: existing.notes ?? null,
+      });
+
+      return row;
+    })();
+  } else {
+    updated = closeStmt.get({
       date_closed: data.date_closed,
       close_reason: data.close_reason,
-      cost_to_close:
-        data.close_reason === "closed_early"
-          ? (data.cost_to_close ?? null)
-          : null,
+      cost_to_close: costToClose,
       stock_delta_applied: stockDelta,
       id: optionId,
       userId,
     }) as OptionRow;
+  }
 
   const account = db
     .prepare("SELECT name FROM accounts WHERE id = ?")
@@ -345,6 +408,72 @@ export async function closeOption(
     { ...updated, account_name: account.name },
     priceData
   );
+}
+
+const MAX_CHAIN_DEPTH = 100;
+
+export async function getRollChain(
+  userId: number,
+  optionId: number
+): Promise<OptionWithCalculations[] | undefined> {
+  // Verify the option belongs to this user
+  const seed = db
+    .prepare("SELECT id FROM options WHERE id = ? AND user_id = ?")
+    .get(optionId, userId) as { id: number } | undefined;
+  if (!seed) return undefined;
+
+  // Walk backward to find the root of the chain
+  let rootId = optionId;
+  let backSteps = 0;
+  while (true) {
+    if (++backSteps > MAX_CHAIN_DEPTH) {
+      console.error(
+        `getRollChain: cycle or depth limit reached walking backward from optionId=${optionId} userId=${userId} at id=${rootId}`
+      );
+      throw new Error("Roll chain depth limit exceeded");
+    }
+    const prev = db
+      .prepare(
+        "SELECT rolled_from_option_id FROM options WHERE id = ? AND user_id = ?"
+      )
+      .get(rootId, userId) as
+      | { rolled_from_option_id: number | null }
+      | undefined;
+    if (!prev || prev.rolled_from_option_id === null) break;
+    rootId = prev.rolled_from_option_id;
+  }
+
+  // Fetch the full forward chain in one recursive CTE query, capped at MAX_CHAIN_DEPTH
+  const chain = db
+    .prepare(
+      `WITH RECURSIVE roll_chain AS (
+         SELECT o.*, a.name AS account_name, 1 AS chain_order
+         FROM options o
+         JOIN accounts a ON a.id = o.account_id
+         WHERE o.id = @rootId AND o.user_id = @userId
+         UNION ALL
+         SELECT o.*, a.name AS account_name, rc.chain_order + 1
+         FROM options o
+         JOIN accounts a ON a.id = o.account_id
+         JOIN roll_chain rc ON o.rolled_from_option_id = rc.id
+         WHERE o.user_id = @userId AND rc.chain_order < @maxDepth
+       )
+       SELECT * FROM roll_chain ORDER BY chain_order`
+    )
+    .all({ rootId, userId, maxDepth: MAX_CHAIN_DEPTH }) as (OptionRow & {
+    account_name: string;
+  })[];
+
+  if (chain.length >= MAX_CHAIN_DEPTH) {
+    console.error(
+      `getRollChain: depth limit reached walking forward from rootId=${rootId} userId=${userId}`
+    );
+    throw new Error("Roll chain depth limit exceeded");
+  }
+
+  const tickers = [...new Set(chain.map((r) => r.ticker.toUpperCase()))];
+  const priceData = tickers.length > 0 ? await getPrices(tickers) : {};
+  return chain.map((row) => attachCalculations(row, priceData));
 }
 
 export function deleteOption(userId: number, optionId: number): boolean {

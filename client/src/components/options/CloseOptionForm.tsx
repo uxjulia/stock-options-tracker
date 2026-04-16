@@ -11,11 +11,43 @@ import { calcProceeds } from "../../utils/calculations";
 import { formatCurrency } from "../../utils/formatters";
 import type { Option } from "../../types/option";
 
-const schema = z.object({
-  close_reason: z.enum(["assigned", "expired", "closed_early"]),
-  date_closed: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  cost_to_close: z.coerce.number().positive().optional(),
-});
+const schema = z
+  .object({
+    close_reason: z.enum(["assigned", "expired", "closed_early", "rolled"]),
+    date_closed: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    cost_to_close: z.coerce.number().positive().optional(),
+    new_strike_price: z.coerce.number().positive().optional(),
+    new_expiration_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional()
+      .or(z.literal("")),
+    new_premium: z.coerce.number().positive().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.close_reason !== "rolled") return;
+    if (data.new_strike_price == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["new_strike_price"],
+        message: "Required when rolling",
+      });
+    }
+    if (!data.new_expiration_date) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["new_expiration_date"],
+        message: "Required when rolling",
+      });
+    }
+    if (data.new_premium == null) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["new_premium"],
+        message: "Required when rolling",
+      });
+    }
+  });
 
 type FormData = z.infer<typeof schema>;
 
@@ -29,6 +61,8 @@ const CLOSE_REASON_DESCRIPTIONS = {
   assigned: "The option was exercised and shares were assigned.",
   expired: "The option expired worthless — maximum profit.",
   closed_early: "You bought back / sold the option before expiration.",
+  rolled:
+    "You closed this position and opened a new one at a different strike or expiration.",
 };
 
 export const CloseOptionForm = ({
@@ -52,15 +86,25 @@ export const CloseOptionForm = ({
     },
   });
 
-  const [closeReason, costToClose] = watch(["close_reason", "cost_to_close"]);
+  const [closeReason, costToClose, newPremium] = watch([
+    "close_reason",
+    "cost_to_close",
+    "new_premium",
+  ]);
 
   const netProceeds = calcProceeds(
     option.direction,
     option.premium,
     option.quantity,
-    closeReason as "closed_early" | "expired" | "assigned" | null | undefined,
+    closeReason as FormData["close_reason"] | null | undefined,
     costToClose ? Number(costToClose) : null
   );
+
+  const rollNetPremium =
+    closeReason === "rolled"
+      ? (newPremium ? Number(newPremium) : 0) -
+        (costToClose ? Number(costToClose) : 0)
+      : null;
 
   const onSubmit = async (data: FormData) => {
     await closeOption.mutateAsync({
@@ -69,7 +113,17 @@ export const CloseOptionForm = ({
         close_reason: data.close_reason,
         date_closed: data.date_closed,
         cost_to_close:
-          data.close_reason === "closed_early" ? data.cost_to_close : undefined,
+          data.close_reason === "closed_early" || data.close_reason === "rolled"
+            ? data.cost_to_close
+            : undefined,
+        new_strike_price:
+          data.close_reason === "rolled" ? data.new_strike_price : undefined,
+        new_expiration_date:
+          data.close_reason === "rolled" && data.new_expiration_date
+            ? data.new_expiration_date
+            : undefined,
+        new_premium:
+          data.close_reason === "rolled" ? data.new_premium : undefined,
       },
     });
     onClose();
@@ -94,6 +148,7 @@ export const CloseOptionForm = ({
                 { value: "expired", label: "Expired Worthless" },
                 { value: "assigned", label: "Assigned" },
                 { value: "closed_early", label: "Closed Early" },
+                { value: "rolled", label: "Rolled Option" },
               ]}
               value={field.value}
               onChange={field.onChange}
@@ -120,7 +175,7 @@ export const CloseOptionForm = ({
           error={errors.date_closed?.message}
         />
 
-        {closeReason === "closed_early" && (
+        {(closeReason === "closed_early" || closeReason === "rolled") && (
           <Input
             label="Cost to Close (per share)"
             type="number"
@@ -137,10 +192,50 @@ export const CloseOptionForm = ({
           />
         )}
 
-        {/* P&L preview */}
+        {closeReason === "rolled" && (
+          <div className="border-t border-slate-700/50 pt-3">
+            <p className="text-xs text-slate-500 uppercase tracking-wide mb-3">
+              New Position
+            </p>
+            <div className="space-y-3">
+              <Input
+                label="New Strike Price"
+                type="number"
+                step="any"
+                min="0.01"
+                placeholder={String(option.strike_price)}
+                required
+                {...register("new_strike_price")}
+                error={errors.new_strike_price?.message}
+              />
+              <Input
+                label="New Expiration Date"
+                type="date"
+                required
+                {...register("new_expiration_date")}
+                error={errors.new_expiration_date?.message}
+              />
+              <Input
+                label="New Premium Received (per share)"
+                type="number"
+                step="0.01"
+                min="0.01"
+                placeholder="1.80"
+                required
+                hint="Premium received for the newly opened position"
+                {...register("new_premium")}
+                error={errors.new_premium?.message}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* P&L preview for old position */}
         <div className="bg-bg-elevated border border-slate-700 rounded-sm p-3 space-y-1">
           <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">
-            Net Proceeds
+            {closeReason === "rolled"
+              ? "Closed Position Proceeds"
+              : "Net Proceeds"}
           </p>
           <div className="flex justify-between text-sm">
             <span className="text-slate-400">
@@ -150,7 +245,7 @@ export const CloseOptionForm = ({
               {formatCurrency(option.premium * 100 * option.quantity)}
             </span>
           </div>
-          {closeReason === "closed_early" &&
+          {(closeReason === "closed_early" || closeReason === "rolled") &&
             costToClose &&
             Number(costToClose) > 0 && (
               <div className="flex justify-between text-sm">
@@ -169,6 +264,39 @@ export const CloseOptionForm = ({
             </span>
           </div>
         </div>
+
+        {/* Roll net premium summary */}
+        {closeReason === "rolled" && rollNetPremium !== null && (
+          <div className="bg-bg-elevated border border-slate-700 rounded-sm p-3 space-y-1">
+            <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">
+              Roll Summary
+            </p>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">New premium received</span>
+              <span className="font-mono text-slate-300">
+                {newPremium
+                  ? formatCurrency(Number(newPremium) * 100 * option.quantity)
+                  : "—"}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-400">Cost to close old position</span>
+              <span className="font-mono text-loss">
+                {costToClose
+                  ? `-${formatCurrency(Number(costToClose) * 100 * option.quantity)}`
+                  : "—"}
+              </span>
+            </div>
+            <div className="flex justify-between text-sm border-t border-slate-700 pt-1 mt-1">
+              <span className="text-slate-300 font-medium">Net from roll</span>
+              <span
+                className={`font-mono font-bold ${rollNetPremium >= 0 ? "text-profit" : "text-loss"}`}
+              >
+                {formatCurrency(rollNetPremium * 100 * option.quantity, true)}
+              </span>
+            </div>
+          </div>
+        )}
 
         {closeReason === "assigned" && (
           <div className="bg-warning/10 border border-warning/30 rounded-lg p-3">
@@ -201,7 +329,7 @@ export const CloseOptionForm = ({
             loading={closeOption.isPending}
             className="flex-1"
           >
-            Close Option
+            {closeReason === "rolled" ? "Roll Option" : "Close Option"}
           </Button>
         </div>
       </form>

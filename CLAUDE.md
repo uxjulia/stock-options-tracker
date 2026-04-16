@@ -92,12 +92,23 @@ Prices are fetched from Yahoo Finance and cached in the `ticker_price_cache` SQL
 - **Next Steps**: Recommends wheel-strategy follow-up trades (sell covered call if net long, sell CSP if net short) based on accumulated `stock_delta_applied` across all assigned options for a ticker. Options with `ignore_next_steps = 1` are suppressed.
 - **Closed options visibility**: Options closed more than 30 days ago are hidden by default (`HIDE_OLDER_THAN_DAYS = 30`).
 - **Expiry warnings**: Dashboard flags options expiring within 7 days (warning) or 3 days (danger).
+- **Rolled options**: Closing with reason `'rolled'` simultaneously creates a new open option inheriting ticker/account/direction/option_type/quantity. The new option stores `rolled_from_option_id` (FK to the closed option) and `roll_net_premium` (new_premium − cost_to_close). This forms a singly-linked chain: backward traversal (newest → root) follows `rolled_from_option_id` directly; forward traversal (root → newest) requires reverse FK queries (`WHERE rolled_from_option_id = current.id`), as implemented in `getRollChain` via a recursive CTE.
+
+### Close Reasons
+| Value | Notes |
+|-------|-------|
+| `expired` | Option expired worthless |
+| `assigned` | Shares assigned; triggers `stock_delta_applied` calculation |
+| `closed_early` | Bought back / sold before expiry; requires `cost_to_close` |
+| `rolled` | Closed and re-opened at new strike/expiry; requires `cost_to_close`, `new_strike_price`, `new_expiration_date`, `new_premium`; auto-creates new option |
 
 ### API Routes
 All routes are under `/api`:
 - `/auth` — login, logout, refresh
 - `/accounts` — CRUD for brokerage accounts
 - `/options` — CRUD + close + toggle ignore_next_steps; list supports filters (account, ticker, type, direction, status, pagination)
+  - `POST /:id/close` — accepts `close_reason`, `date_closed`, optional `cost_to_close`; for `rolled` also accepts `new_strike_price`, `new_expiration_date`, `new_premium`
+  - `GET /:id/roll-chain` — returns ordered array of all options in the roll chain (root → current open leg)
 - `/tickers` — get prices, set/clear manual override
 - `/pnl` — summary, by-account, by-ticker (filterable by year/account)
 - `/next-steps` — wheel strategy recommendations

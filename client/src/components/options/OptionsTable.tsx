@@ -5,6 +5,8 @@ import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { OptionCard } from "./OptionCard";
 import { OptionForm } from "./OptionForm";
 import { CloseOptionForm } from "./CloseOptionForm";
+import { RollChainModal } from "./RollChainModal";
+import { CloseReasonBadge } from "./CloseReasonBadge";
 import { useDeleteOption } from "../../hooks/useOptions";
 import {
   formatCurrency,
@@ -29,12 +31,14 @@ const OptionRow = ({
   onEdit,
   onClose,
   onDelete,
+  onViewChain,
 }: {
   option: Option;
   showAccount: boolean;
   onEdit: () => void;
   onClose: () => void;
   onDelete: () => void;
+  onViewChain: () => void;
 }) => {
   const daysUntilExpiry = calcDaysUntilExpiry(option.expiration_date);
   const isOpen = !option.date_closed;
@@ -135,37 +139,32 @@ const OptionRow = ({
         {option.days_open}d
       </td>
       <td className="py-3 px-3">
-        <div className="flex items-center gap-1 justify-end">
-          {option.close_reason && (
-            <Badge
-              variant={
-                option.close_reason === "expired"
-                  ? "success"
-                  : option.close_reason === "assigned"
-                    ? "warning"
-                    : "neutral"
-              }
-              size="sm"
-            >
-              {option.close_reason}
-            </Badge>
-          )}
-          {isOpen && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={onClose}
-              title="Close option"
-            >
-              <SquareCheckBig size={14} />
+        <div className="flex items-center gap-1 justify-between">
+          <div>
+            <CloseReasonBadge
+              closeReason={option.close_reason}
+              rolledFromOptionId={option.rolled_from_option_id}
+              onViewChain={onViewChain}
+            />
+          </div>
+          <div>
+            {isOpen && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={onClose}
+                title="Close option"
+              >
+                <SquareCheckBig size={14} />
+              </Button>
+            )}
+            <Button size="sm" variant="ghost" onClick={onEdit} title="Edit">
+              <Pencil size={14} />
             </Button>
-          )}
-          <Button size="sm" variant="ghost" onClick={onEdit} title="Edit">
-            <Pencil size={14} />
-          </Button>
-          <Button size="sm" variant="ghost" onClick={onDelete} title="Delete">
-            <X size={14} />
-          </Button>
+            <Button size="sm" variant="ghost" onClick={onDelete} title="Delete">
+              <X size={14} />
+            </Button>
+          </div>
         </div>
       </td>
     </tr>
@@ -179,6 +178,7 @@ export const OptionsTable = ({
   const [editOption, setEditOption] = useState<Option | null>(null);
   const [closeOption, setCloseOption] = useState<Option | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Option | null>(null);
+  const [chainOptionId, setChainOptionId] = useState<number | null>(null);
   const deleteOption = useDeleteOption();
 
   if (options.length === 0) {
@@ -202,6 +202,7 @@ export const OptionsTable = ({
             onEdit={() => setEditOption(option)}
             onClose={() => setCloseOption(option)}
             onDelete={() => setDeleteTarget(option)}
+            onViewChain={() => setChainOptionId(option.id)}
           />
         ))}
       </div>
@@ -258,6 +259,7 @@ export const OptionsTable = ({
                 onEdit={() => setEditOption(option)}
                 onClose={() => setCloseOption(option)}
                 onDelete={() => setDeleteTarget(option)}
+                onViewChain={() => setChainOptionId(option.id)}
               />
             ))}
           </tbody>
@@ -277,6 +279,14 @@ export const OptionsTable = ({
           isOpen={!!closeOption}
           onClose={() => setCloseOption(null)}
           option={closeOption}
+        />
+      )}
+
+      {chainOptionId !== null && (
+        <RollChainModal
+          isOpen
+          onClose={() => setChainOptionId(null)}
+          optionId={chainOptionId}
         />
       )}
 

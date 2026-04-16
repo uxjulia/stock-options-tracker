@@ -12,6 +12,7 @@ router.get("/:id", optionsController.getOne);
 router.put("/:id", optionsController.update);
 router.delete("/:id", optionsController.remove);
 router.post("/:id/close", optionsController.close);
+router.get("/:id/roll-chain", optionsController.getRollChain);
 router.patch("/:id/ignore-next-steps", optionsController.ignoreNextSteps);
 
 export default router;
