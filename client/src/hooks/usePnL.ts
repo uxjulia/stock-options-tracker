@@ -13,7 +13,7 @@ export const usePnLSummary = () => {
 export const usePnLByAccount = (year?: number) => {
   return useQuery({
     queryKey: ["pnl", "by-account", year],
-    queryFn: () => pnlApi.getPnLByAccount(year),
+    queryFn: () => pnlApi.getPnL(year),
     staleTime: 2 * 60 * 1000,
   });
 };

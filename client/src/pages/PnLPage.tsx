@@ -10,6 +10,7 @@ import {
   useResumeTracking,
   useResetDeltaFromPnL,
 } from "../hooks/usePnL";
+import type { PnLByAccount } from "../types/pnl";
 import { formatCurrency, formatPercent } from "../utils/formatters";
 
 type Tab = "account" | "ticker";
@@ -30,7 +31,7 @@ export const PnLPage = () => {
     currentYear - 2,
   ];
 
-  const accountChartData = (byAccount ?? []).map((a) => ({
+  const accountChartData = (byAccount ?? []).map((a: PnLByAccount) => ({
     name: a.account_name,
     value: a.realized_pnl,
   }));
@@ -161,7 +162,7 @@ export const PnLPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700/30">
-                  {(byAccount ?? []).map((row) => (
+                  {(byAccount ?? []).map((row: PnLByAccount) => (
                     <tr
                       key={row.account_id}
                       className="hover:bg-bg-elevated/50"
