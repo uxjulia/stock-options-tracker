@@ -65,6 +65,10 @@ CREATE TABLE IF NOT EXISTS options (
   updated_at          TEXT    NOT NULL DEFAULT (datetime('now'))
 );
 
+-- Add roll-tracking columns to existing options tables (idempotent)
+ALTER TABLE options ADD COLUMN rolled_from_option_id INTEGER REFERENCES options(id) ON DELETE SET NULL;
+ALTER TABLE options ADD COLUMN roll_net_premium REAL;
+
 CREATE INDEX IF NOT EXISTS idx_options_user_id       ON options(user_id);
 CREATE INDEX IF NOT EXISTS idx_options_account_id    ON options(account_id);
 CREATE INDEX IF NOT EXISTS idx_options_ticker        ON options(ticker);
@@ -72,10 +76,6 @@ CREATE INDEX IF NOT EXISTS idx_options_expiration    ON options(expiration_date)
 CREATE INDEX IF NOT EXISTS idx_options_date_opened   ON options(date_opened);
 CREATE INDEX IF NOT EXISTS idx_options_date_closed   ON options(date_closed);
 CREATE INDEX IF NOT EXISTS idx_options_rolled_from   ON options(rolled_from_option_id);
-
--- Add roll-tracking columns to existing options tables (idempotent)
-ALTER TABLE options ADD COLUMN rolled_from_option_id INTEGER REFERENCES options(id) ON DELETE SET NULL;
-ALTER TABLE options ADD COLUMN roll_net_premium REAL;
 
 -- ============================================================
 -- TICKER SETTINGS (per-user, per-ticker preferences)
