@@ -31,7 +31,6 @@ export default defineConfig([
       },
     },
     rules: {
-      "@typescript-eslint/no-explicit-any": "off",
       "func-style": ["error", "expression"],
       "react/function-component-definition": [
         "error",

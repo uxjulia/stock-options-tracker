@@ -8,7 +8,13 @@ import db from "../config/database";
 function migrateOptionsForRolled(): void {
   const cols = db.pragma("table_info(options)") as Array<{ name: string }>;
   const hasRolledCols = cols.some((c) => c.name === "rolled_from_option_id");
-  if (hasRolledCols) return;
+  const tableDef = (
+    db
+      .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='options'")
+      .get() as { sql: string } | undefined
+  )?.sql ?? "";
+  const hasRolledConstraint = tableDef.includes("'rolled'");
+  if (hasRolledCols && hasRolledConstraint) return;
 
   db.pragma("foreign_keys = OFF");
   try {
